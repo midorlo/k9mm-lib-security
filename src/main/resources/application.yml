@@ -1,0 +1,8 @@
+k9:
+  fqdn: k9.midorlo.com
+  security:
+    strategy: MODE_INHERITABLETHREADLOCAL
+    secret: zdtlD3JK56m6wTTgsNFhqzjqP
+spring:
+  jpa:
+    open-in-view: true

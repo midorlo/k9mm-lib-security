@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dev?currentSchema=k9
+    password: k9
+    username: k9
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+k9:
+  security:
+    default-admin-login: admin
+    default-admin-password: admin

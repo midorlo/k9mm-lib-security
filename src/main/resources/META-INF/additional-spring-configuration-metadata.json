@@ -1,0 +1,27 @@
+{
+  "properties": [
+    {
+      "name": "k9.security.strategy",
+      "type": "java.lang.String",
+      "description": "Sets the SecurityContextHolderStrategy.",
+      "defaultValue": "MODE_INHERITABLETHREADLOCAL"
+    },
+    {
+      "name": "k9.security.default-admin-login",
+      "type": "java.lang.String",
+      "description": "Declare a default admin login.",
+      "defaultValue": "admin"
+    },
+    {
+      "name": "k9.security.default-admin-password",
+      "type": "java.lang.String",
+      "description": "Declare a default admin password.",
+      "defaultValue": "admin"
+    },
+    {
+      "name": "k9.fqdn",
+      "type": "java.lang.String",
+      "description": "Fully qualified domain name of the application."
+    }
+  ]
+}
