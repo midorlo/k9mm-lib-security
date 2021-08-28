@@ -1,0 +1,30 @@
+security:
+  login: s
+    reset: *
+      confirm: *
+  register: *
+    confirm: *
+  principal: user
+    change-password: inherit
+    change-email: inherit
+      confirm: inherit
+    disable: inherit
+      confirm: inherit
+    delete: inherit
+      confirm: inherit
+administrative:
+  security:
+    account:
+      sessions:
+      activities:
+      create:
+      update:
+      delete:
+    active-sessions:
+      terminate:
+    last-activities:
+
+
+
+
+
