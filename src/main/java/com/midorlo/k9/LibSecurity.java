@@ -1,7 +1,7 @@
 package com.midorlo.k9;
 
-import com.midorlo.k9.domain.apimap.ApiDescription;
-import com.midorlo.k9.repository.apimap.ApiDescriptionRepository;
+import com.midorlo.k9.domain.apimap.EndpointReference;
+import com.midorlo.k9.repository.apimap.EndpointReferenceRepository;
 import com.midorlo.k9.service.security.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Profile;
 @SpringBootApplication
 @EnableConfigurationProperties
 @Slf4j
-public class InitializeLibraryK9Security {
+public class LibSecurity {
 
     @Value("${k9.security.default-admin-login}")
     private String adminEmail;
@@ -24,29 +24,29 @@ public class InitializeLibraryK9Security {
 
     @Profile({"dev", "tst", "int", "!prd"})
     public static void main(String[] args) {
-        SpringApplication.run(InitializeLibraryK9Security.class, args);
+        SpringApplication.run(LibSecurity.class, args);
     }
 
     @Bean
     public CommandLineRunner initialize(AccountService accountService,
-                                        ApiDescriptionRepository apiDescriptionRepository) {
+                                        EndpointReferenceRepository apiDescriptionRepository) {
         return args -> {
             log.info("init({})", accountService);
             log.info("Initialized Account {}", accountService.createIfNotExists(adminEmail, adminPassword,
                     "Administrator"));
 
 
-            ApiDescription d1 = new ApiDescription();
+            EndpointReference d1 = new EndpointReference();
             d1.setPath("/security");
             apiDescriptionRepository.save(d1);
 
             log.info("Initialized");
 
-            ApiDescription d2 = new ApiDescription();
+            EndpointReference d2 = new EndpointReference();
             d1.setPath("/security/login");
             apiDescriptionRepository.save(d1);
 
-            ApiDescription d3 = new ApiDescription();
+            EndpointReference d3 = new EndpointReference();
             d1.setPath("/security/register");
             apiDescriptionRepository.save(d1);
 

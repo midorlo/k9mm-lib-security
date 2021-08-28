@@ -1,4 +1,4 @@
-package com.midorlo.k9.rest.security.secured.security;
+package com.midorlo.k9.rest.security;
 
 public class LoginController {
 }

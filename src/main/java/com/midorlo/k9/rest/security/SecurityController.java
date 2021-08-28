@@ -1,4 +1,4 @@
-package com.midorlo.k9.web.rest;
+package com.midorlo.k9.rest.security;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

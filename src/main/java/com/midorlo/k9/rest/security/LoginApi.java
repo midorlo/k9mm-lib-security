@@ -1,4 +1,4 @@
-package com.midorlo.k9.rest.security.ops.security;
+package com.midorlo.k9.rest.security;
 
 import com.midorlo.k9.service.security.AccountService;
 import org.springframework.web.bind.annotation.RestController;

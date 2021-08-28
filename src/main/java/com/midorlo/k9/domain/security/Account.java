@@ -8,6 +8,9 @@ import java.util.HashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ * @implNote Full implementation of {@link UserDetails}
+ */
 @Entity
 @Table(name = "accounts")
 public class Account implements UserDetails {
@@ -18,11 +21,11 @@ public class Account implements UserDetails {
     public Account(String email,
                    String password,
                    Role primaryRole) {
-        this.email       = email;
-        this.password    = password;
+        this.email = email;
+        this.password = password;
         this.isActivated = true;
-        this.isLocked    = false;
-        this.isExpired   = false;
+        this.isLocked = false;
+        this.isExpired = false;
         this.roles.add(primaryRole);
     }
 
@@ -58,24 +61,36 @@ public class Account implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "id_privilege"))
     private Collection<Privilege> privileges = new HashSet<>();
 
-    public Collection<Privilege> getPrivileges()                {return privileges;}
+    public Collection<Privilege> getPrivileges() {
+        return privileges;
+    }
 
-    public void setPrivileges(Collection<Privilege> privileges) {this.privileges = privileges;}
+    public void setPrivileges(Collection<Privilege> privileges) {
+        this.privileges = privileges;
+    }
 
-    protected Collection<Role> getRoles()                       {return roles;}
+    protected Collection<Role> getRoles() {
+        return roles;
+    }
 
-    public void setRoles(Collection<Role> roles)                {this.roles = roles;}
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
 
-    public Long getId()                                         {return id;}
+    public Long getId() {
+        return id;
+    }
 
-    public void setId(Long id)                                  {this.id = id;}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     @Override
     public Collection<? extends Privilege> getAuthorities() {
         return Stream.concat(getRoles().stream().map(Role::getPrivileges),
-                             getPrivileges().stream())
-                     .map(p -> (Privilege) p)
-                     .collect(Collectors.toSet());
+                        getPrivileges().stream())
+                .map(p -> (Privilege) p)
+                .collect(Collectors.toSet());
     }
 
     @Override

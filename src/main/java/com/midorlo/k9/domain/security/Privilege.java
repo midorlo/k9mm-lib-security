@@ -30,16 +30,14 @@ public class Privilege implements GrantedAuthority {
     @Column(name = "http_method", nullable = false)
     private HttpMethod httpMethod;
 
-    /**
-     * Translation for Spring Security.
-     *
-     * @return name.
-     */
+    //<editor-fold desc="Spring Security">
     @Override
     public String getAuthority() {
         return name;
     }
+    //</editor-fold>
 
+    //<editor-fold desc="ToString/Equals/HashCode">
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -53,4 +51,5 @@ public class Privilege implements GrantedAuthority {
     public int hashCode() {
         return 2090507994;
     }
+    //</editor-fold>
 }
