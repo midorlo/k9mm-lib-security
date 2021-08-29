@@ -1,11 +1,8 @@
-package com.midorlo.k9.configuration.security;
+package com.midorlo.k9.config.security;
 
-import com.midorlo.k9.configuration.security.filters.AuthenticationFilter;
-import com.midorlo.k9.configuration.security.filters.AuthorizationFilter;
-import com.midorlo.k9.configuration.security.filters.ConfigurationFilter;
-import com.midorlo.k9.service.security.AccountService;
+import com.midorlo.k9.config.security.filters.AuthenticationFilter;
+import com.midorlo.k9.service.security.AccountsService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,10 +13,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -40,22 +37,17 @@ import javax.servlet.http.HttpServletResponse;
 )
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private final AccountService       accountService;
+    private final AccountsService accountsService;
     private final AuthenticationFilter authenticationFilter;
-    private final ConfigurationFilter  configurationFilter;
+    private final AuthorizationFilter authorizationFilter;
 
-    @Value("${k9.security.strategy}")
-    private String strategyName;
-
-    public SecurityConfiguration(AccountService accountService,
+    public SecurityConfiguration(AccountsService accountsService,
                                  AuthenticationFilter authenticationFilter,
-                                 ConfigurationFilter configurationFilter) {
+                                 AuthorizationFilter authorizationFilter) {
 
-        this.accountService       = accountService;
+        this.accountsService = accountsService;
         this.authenticationFilter = authenticationFilter;
-        this.configurationFilter  = configurationFilter;
-
-        SecurityContextHolder.setStrategyName(strategyName);
+        this.authorizationFilter = authorizationFilter;
     }
 
     /**
@@ -63,17 +55,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
+        log.info("passwordEncoder()");
         return new BCryptPasswordEncoder();
     }
 
     /**
-     * Used by spring security if CORS is enabled.
+     * Configure Cors.
+     *
+     * @implNote Will only be invoked if cors is enabled.
      */
     @Bean
     public CorsFilter corsFilter() {
-        log.info("Configuring CORS filter.");
+        log.info("corsFilter()");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration               config = new CorsConfiguration();
+        CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
@@ -83,24 +78,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * Implement finding the spring security user to authentificate against.
+     * Provide a way to authenticate against a (Spring Security) UserDetails record.
      */
     @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        log.info("Configuring AuthenticationManagerBuilder.");
-        auth.userDetailsService(username -> accountService.findByName(username)
-                                                          .orElseThrow(() -> new UsernameNotFoundException(username)));
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        log.info("configure({})", auth);
+        auth.userDetailsService(login -> accountsService
+                .findAccountByEmail(login)
+                .orElseThrow(() -> new UsernameNotFoundException(login)));
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        log.info("(Default) Configuring AuthenticationManagerBuilder.");
+        log.info("configure({})", web);
         super.configure(web);
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        log.info("(Default) Configuring HttpSecurity.");
+    public void configure(HttpSecurity http) throws Exception {
+        log.info("configure({})", http);
         http
                 // Enable CORS
                 .cors()
@@ -120,28 +116,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint((request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
                 .and()
 
-                // Set Cost-efficient base filters on endpoints
+                // Set authorization rules
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/api/").permitAll()
-                .antMatchers("/api/v1").permitAll()
-                .antMatchers("/api/v1/apidocs/**").permitAll()
-                .antMatchers("/api/v1/public/**").permitAll()
-                .antMatchers("/api/v1/secured/**").authenticated()
-                .antMatchers("/api/v1/ops/**").fullyAuthenticated()
+                .antMatchers("/**").anonymous()
                 .and()
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new AuthorizationFilter(), AuthenticationFilter.class)
-                .addFilterAfter(configurationFilter, AuthorizationFilter.class);
+                .addFilterAfter(authorizationFilter, AuthenticationFilter.class);
     }
 
     /**
-     * Expose authentication manager bean.
+     * Exposes the authentication manager bean.
      */
     @Override
     @Bean
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
 }

@@ -1,9 +1,8 @@
-package com.midorlo.k9.configuration.security.filters;
+package com.midorlo.k9.config.security.filters;
 
 import com.midorlo.k9.service.security.AuthenticationService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
