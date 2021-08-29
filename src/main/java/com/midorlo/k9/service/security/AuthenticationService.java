@@ -26,7 +26,7 @@ import static com.midorlo.k9.service.security.AuthenticationService.K9FilterUtil
 @Service
 public class AuthenticationService {
 
-    private final AccountService accountService;
+    private final AccountsService accountsService;
 
     @Value("${k9.security.secret}")
     private String jwtSecret;
@@ -34,7 +34,9 @@ public class AuthenticationService {
     private String jwtIssuer;
 
 
-    public AuthenticationService(AccountService accountService) {this.accountService = accountService;}
+    public AuthenticationService(AccountsService accountsService) {
+        this.accountsService = accountsService;
+    }
 
 
     private String resolveAuthorization(HttpServletRequest request) {
@@ -44,8 +46,8 @@ public class AuthenticationService {
                 && header.startsWith("Bearer ")
                 && header.contains(" ")
                 && header.split(" ").length > 1) {
-            final String token  = header.split(" ")[1].trim();
-            Claims       claims = resolveClaims(token, jwtSecret);
+            final String token = header.split(" ")[1].trim();
+            Claims claims = resolveClaims(token, jwtSecret);
             if (claims != null) {
                 String subject = claims.getSubject();
                 if (subject != null) {
@@ -62,7 +64,7 @@ public class AuthenticationService {
     public void authenticate(HttpServletRequest request) {
         String email = resolveAuthorization(request);
         if (email != null) {
-            accountService.findAccountByEmail(email).ifPresent(account -> setSecurityContext(request, account));
+            accountsService.findAccountByEmail(email).ifPresent(account -> setSecurityContext(request, account));
 
         }
     }
@@ -79,26 +81,26 @@ public class AuthenticationService {
 
         static Claims resolveClaims(String token, String jwtSecret) {
             return Jwts.parserBuilder()
-                       .setSigningKey(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)))
-                       .build()
-                       .parseClaimsJws(token)
-                       .getBody();
+                    .setSigningKey(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
         }
 
         static String generateAccessToken(Account account, String jwtIssuer, String jwtSecret) {
             return Jwts.builder()
-                       .setSubject(String.format("%s,%s", account.getId(), account.getUsername()))
-                       .setIssuer(jwtIssuer)
-                       .setIssuedAt(new Date())
-                       .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)) // 1 week
-                       .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)))
-                       .compact();
+                    .setSubject(String.format("%s,%s", account.getId(), account.getEmail()))
+                    .setIssuer(jwtIssuer)
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + 7 * 24 * 60 * 60 * 1000)) // 1 week
+                    .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret)))
+                    .compact();
         }
 
 
         static String resolveAccountId(String token, String jwtSecret) {
             return resolveClaims(token, jwtSecret).getSubject()
-                                                  .split(",")[0];
+                    .split(",")[0];
         }
 
 

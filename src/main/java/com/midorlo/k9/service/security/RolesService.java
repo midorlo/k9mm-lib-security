@@ -5,11 +5,11 @@ import com.midorlo.k9.repository.security.RoleRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoleService {
+public class RolesService {
 
     private final RoleRepository roleRepository;
 
-    public RoleService(RoleRepository roleRepository) {this.roleRepository = roleRepository;}
+    public RolesService(RoleRepository roleRepository) {this.roleRepository = roleRepository;}
 
     public Role createIfNotExists(String name) {
         return roleRepository.findByName(name).orElse(roleRepository.save(new Role(name)));

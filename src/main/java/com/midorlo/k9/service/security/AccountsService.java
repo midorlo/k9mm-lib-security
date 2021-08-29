@@ -2,19 +2,20 @@ package com.midorlo.k9.service.security;
 
 import com.midorlo.k9.domain.security.Account;
 import com.midorlo.k9.repository.security.AccountRepository;
+import com.midorlo.k9.domain.security.property.AccountState;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class AccountService {
+public class AccountsService  {
 
     private final AccountRepository accountRepository;
-    private final RoleService       roleService;
+    private final RolesService roleService;
 
-    public AccountService(AccountRepository accountRepository, RoleService roleService) {
+    public AccountsService(AccountRepository accountRepository, RolesService roleService) {
         this.accountRepository = accountRepository;
-        this.roleService       = roleService;
+        this.roleService = roleService;
     }
 
     public Optional<Account> findByName(String email) {
@@ -23,14 +24,15 @@ public class AccountService {
 
     public Account createIfNotExists(String email, String password, String role) {
         return accountRepository.findAccountByEmail(email)
-                                .orElse(accountRepository.save(
-                                                new Account(
-                                                        email,
-                                                        password,
-                                                        roleService.createIfNotExists(role)
-                                                )
-                                        )
-                                );
+                .orElse(accountRepository.save(
+                                new Account(
+                                        email,
+                                        password,
+                                        roleService.createIfNotExists(role),
+                                        AccountState.ACTIVE
+                                )
+                        )
+                );
     }
 
     public Optional<Account> findAccountByEmail(String email) {
