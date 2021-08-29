@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/dev?currentSchema=k9
+    url: jdbc:postgresql://localhost:5432/k9?currentSchema=security
     password: k9
     username: k9
     driver-class-name: org.postgresql.Driver
