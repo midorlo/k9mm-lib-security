@@ -1,4 +1,4 @@
-package com.midorlo.k9.config.security.filters;
+package com.midorlo.k9.components.security.filters;
 
 import com.midorlo.k9.service.security.AuthenticationService;
 import lombok.SneakyThrows;

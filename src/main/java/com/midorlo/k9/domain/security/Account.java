@@ -49,16 +49,16 @@ public class Account implements UserDetails {
     @Column(name = "state", nullable = false)
     private AccountState state;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "accounts_roles",
-            joinColumns = @JoinColumn(name = "id_account"),
-            inverseJoinColumns = @JoinColumn(name = "id_role"))
+            joinColumns = @JoinColumn(name = "id_account", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"))
     private Collection<Role> roles = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "accounts_authorities",
-            joinColumns = @JoinColumn(name = "id_account"),
-            inverseJoinColumns = @JoinColumn(name = "id_privilege"))
+            joinColumns = @JoinColumn(name = "id_account", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_privilege", referencedColumnName = "id"))
     private Set<Authority> authorities = new HashSet<>();
 
     @Override

@@ -13,7 +13,6 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-@Table(name = "roles")
 public class Role {
 
     @Id
@@ -24,10 +23,10 @@ public class Role {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "roles_authorities",
-            joinColumns = @JoinColumn(name = "id_role"),
-            inverseJoinColumns = @JoinColumn(name = "id_authority"))
+            joinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_authority", referencedColumnName = "id"))
     @ToString.Exclude
     private Set<Authority> authorities;
 
@@ -36,6 +35,15 @@ public class Role {
 
     public Role(String name) {
         this.name = name;
+    }
+
+    public Role(String name, Set<Authority> authorities) {
+        this.name = name;
+        this.authorities = authorities;
+    }
+
+    public Role(String name, Authority authority) {
+        this(name, Set.of(authority));
     }
 
     @Override

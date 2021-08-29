@@ -10,6 +10,14 @@ import javax.persistence.*;
 @Getter
 @Setter
 public class Endpoint {
+
+    public Endpoint() {
+    }
+
+    public Endpoint(String servletPath) {
+        this.servletPath = servletPath;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
@@ -17,10 +25,4 @@ public class Endpoint {
 
     @Column(name = "servlet_path", nullable = false, unique = true, length = 128)
     private String servletPath;
-
-    @Column(name = "name", length = 256)
-    private String name;
-
-    @Column(name = "description", length = 32)
-    private String description;
 }

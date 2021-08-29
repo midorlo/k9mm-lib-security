@@ -1,6 +1,5 @@
-package com.midorlo.k9.config.security;
+package com.midorlo.k9.config;
 
-import com.midorlo.k9.config.security.filters.AuthenticationFilter;
 import com.midorlo.k9.service.security.AccountsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -16,8 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.access.intercept.AuthorizationFilter;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -38,16 +35,17 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final AccountsService accountsService;
-    private final AuthenticationFilter authenticationFilter;
-    private final AuthorizationFilter authorizationFilter;
+//    private final AuthenticationFilter authenticationFilter;
+//    private final AuthorizationFilter authorizationFilter;
 
-    public SecurityConfiguration(AccountsService accountsService,
-                                 AuthenticationFilter authenticationFilter,
-                                 AuthorizationFilter authorizationFilter) {
+    public SecurityConfiguration(AccountsService accountsService
+//                                 AuthenticationFilter authenticationFilter,
+//                                 AuthorizationFilter authorizationFilter
+    ) {
 
         this.accountsService = accountsService;
-        this.authenticationFilter = authenticationFilter;
-        this.authorizationFilter = authorizationFilter;
+//        this.authenticationFilter = authenticationFilter;
+//        this.authorizationFilter = authorizationFilter;
     }
 
     /**
@@ -120,8 +118,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/**").anonymous()
                 .and()
-                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(authorizationFilter, AuthenticationFilter.class);
+//                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .addFilterAfter(authorizationFilter, AuthenticationFilter.class)
+        ;
     }
 
     /**

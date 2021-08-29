@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Table(name = "privileges")
+@Table(name = "authorities")
 public class Authority implements GrantedAuthority {
 
     @Id
@@ -18,18 +18,25 @@ public class Authority implements GrantedAuthority {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
-
-    @Column(name = "path", nullable = false, unique = true)
-    private String absolutePath;
 
     @Enumerated
     @Column(name = "http_method", nullable = false)
-    private HttpMethod httpMethod;
+    private HttpMethod method;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH}, optional = false)
+    @JoinColumn(name = "endpoint_id", nullable = false)
+    private Endpoint endpoint;
+
+    public Authority() {
+    }
+
+    public Authority(HttpMethod method, Endpoint endpoint) {
+        this.method = method;
+        this.endpoint = endpoint;
+    }
 
     @Override
     public String getAuthority() {
-        return httpMethod + " " + absolutePath;
+        return endpoint.getServletPath() + ":" + method;
     }
 }

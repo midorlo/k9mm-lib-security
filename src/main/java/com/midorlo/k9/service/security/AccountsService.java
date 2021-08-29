@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AccountsService  {
+public class AccountsService {
 
     private final AccountRepository accountRepository;
     private final RolesService roleService;
@@ -33,6 +33,10 @@ public class AccountsService  {
                                 )
                         )
                 );
+    }
+
+    public Account createIfNotExists(Account account) {
+        return accountRepository.findAccountByEmail(account.getEmail()).orElse(accountRepository.save(account));
     }
 
     public Optional<Account> findAccountByEmail(String email) {
