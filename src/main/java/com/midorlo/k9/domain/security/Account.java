@@ -1,10 +1,14 @@
 package com.midorlo.k9.domain.security;
 
+import com.midorlo.k9.domain.security.property.AccountState;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -12,6 +16,8 @@ import java.util.stream.Stream;
  * @implNote Full implementation of {@link UserDetails}
  */
 @Entity
+@Getter
+@Setter
 @Table(name = "accounts")
 public class Account implements UserDetails {
 
@@ -20,13 +26,12 @@ public class Account implements UserDetails {
 
     public Account(String email,
                    String password,
-                   Role primaryRole) {
+                   Role primaryRole,
+                   AccountState state) {
         this.email = email;
         this.password = password;
-        this.isActivated = true;
-        this.isLocked = false;
-        this.isExpired = false;
         this.roles.add(primaryRole);
+        this.state = state;
     }
 
     @Id
@@ -40,14 +45,9 @@ public class Account implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "is_expired", nullable = false)
-    private boolean isExpired = false;
-
-    @Column(name = "is_activated", nullable = false)
-    private boolean isActivated;
-
-    @Column(name = "is_locked", nullable = false)
-    private boolean isLocked = false;
+    @Enumerated
+    @Column(name = "state", nullable = false)
+    private AccountState state;
 
     @ManyToMany
     @JoinTable(name = "accounts_roles",
@@ -56,72 +56,49 @@ public class Account implements UserDetails {
     private Collection<Role> roles = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(name = "accounts_privileges",
+    @JoinTable(name = "accounts_authorities",
             joinColumns = @JoinColumn(name = "id_account"),
             inverseJoinColumns = @JoinColumn(name = "id_privilege"))
-    private Collection<Privilege> privileges = new HashSet<>();
-
-    public Collection<Privilege> getPrivileges() {
-        return privileges;
-    }
-
-    public void setPrivileges(Collection<Privilege> privileges) {
-        this.privileges = privileges;
-    }
-
-    protected Collection<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    private Set<Authority> authorities = new HashSet<>();
 
     @Override
-    public Collection<? extends Privilege> getAuthorities() {
-        return Stream.concat(getRoles().stream().map(Role::getPrivileges),
-                        getPrivileges().stream())
-                .map(p -> (Privilege) p)
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
+    public int hashCode() {
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return getEmail();
     }
 
     @Override
     public boolean isAccountNonExpired() {
-        return isExpired;
+        return getState().equals(AccountState.ACTIVE);
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return isLocked;
+        return getState().getValue() >= AccountState.SANCTIONED.getValue();
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return isActivated;
+        return getState().getValue() >= AccountState.EXPIRED_PASSWORD.getValue();
     }
 
     @Override
     public boolean isEnabled() {
-        return !isExpired
-                && !isLocked
-                && isActivated;
+        return getState().getValue() >= AccountState.DISABLED.getValue();
+    }
+
+    @Override
+    public Set<Authority> getAuthorities() {
+        return Stream.concat(
+                        roles.stream()
+                                .map(Role::getAuthorities)
+                                .flatMap(Collection::stream),
+                        authorities.stream())
+                .collect(Collectors.toSet());
     }
 }

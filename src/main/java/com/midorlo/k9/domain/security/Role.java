@@ -1,11 +1,35 @@
 package com.midorlo.k9.domain.security;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.Hibernate;
+
 import javax.persistence.*;
-import java.util.Collection;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
+@Getter
+@Setter
+@ToString
 @Table(name = "roles")
 public class Role {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "name", nullable = false, unique = true)
+    private String name;
+
+    @ManyToMany
+    @JoinTable(name = "roles_authorities",
+            joinColumns = @JoinColumn(name = "id_role"),
+            inverseJoinColumns = @JoinColumn(name = "id_authority"))
+    @ToString.Exclude
+    private Set<Authority> authorities;
 
     public Role() {
     }
@@ -14,35 +38,16 @@ public class Role {
         this.name = name;
     }
 
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
-    public Long getId()        {return id;}
-
-    public void setId(Long id) {this.id = id;}
-
-
-    @ManyToMany
-    @JoinTable(name = "roles_privileges",
-            joinColumns = @JoinColumn(name = "id_role"),
-            inverseJoinColumns = @JoinColumn(name = "id_privilege"))
-    private Collection<Privilege> privileges;
-
-
-    public String getName()          {return name;}
-
-    public void setName(String name) {this.name = name;}
-
-    public Collection<Privilege> getPrivileges() {
-        return privileges;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Role role = (Role) o;
+        return Objects.equals(id, role.id);
     }
 
-    public void setPrivileges(Collection<Privilege> privileges) {
-        this.privileges = privileges;
+    @Override
+    public int hashCode() {
+        return 0;
     }
 }
