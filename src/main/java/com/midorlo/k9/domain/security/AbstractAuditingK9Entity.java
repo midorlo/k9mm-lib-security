@@ -8,7 +8,6 @@ import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 @NoArgsConstructor
-@RequiredArgsConstructor
 public abstract class AbstractAuditingK9Entity extends AbstractAuditable<Account, Long> {
 
     /**

@@ -12,7 +12,6 @@ import java.util.Objects;
 @Table(name = "endpoints")
 @Getter
 @Setter
-@NoArgsConstructor
 @RequiredArgsConstructor
 public class Endpoint extends AbstractAuditingK9Entity {
 
