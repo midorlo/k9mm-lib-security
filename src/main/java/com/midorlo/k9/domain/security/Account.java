@@ -2,27 +2,55 @@ package com.midorlo.k9.domain.security;
 
 import com.midorlo.k9.domain.security.property.AccountState;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @implNote Full implementation of {@link UserDetails}
  */
-@Entity
+
 @Getter
 @Setter
-@Table(name = "accounts")
-public class Account implements UserDetails {
+@Entity(name = "account")
+@Table(name = "accounts", schema = "security")
+@RequiredArgsConstructor
+public class Account extends AbstractAuditingK9Entity implements UserDetails {
 
-    public Account() {
-    }
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "password", nullable = false)
+    @ToString.Exclude
+    private String password;
+
+    @Enumerated
+    @Column(name = "state", nullable = false)
+    private AccountState state;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "accounts_roles",
+            joinColumns = @JoinColumn(name = "id_account", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"))
+    @ToString.Exclude
+    private Collection<Role> roles = new HashSet<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinTable(name = "accounts_authorities",
+            joinColumns = @JoinColumn(name = "id_account", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "id_privilege", referencedColumnName = "id"))
+    @ToString.Exclude
+    private Set<Authority> authorities = new HashSet<>();
 
     public Account(String email,
                    String password,
@@ -34,42 +62,30 @@ public class Account implements UserDetails {
         this.state = state;
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
-
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Enumerated
-    @Column(name = "state", nullable = false)
-    private AccountState state;
-
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @JoinTable(name = "accounts_roles",
-            joinColumns = @JoinColumn(name = "id_account", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"))
-    private Collection<Role> roles = new HashSet<>();
-
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
-    @JoinTable(name = "accounts_authorities",
-            joinColumns = @JoinColumn(name = "id_account", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "id_privilege", referencedColumnName = "id"))
-    private Set<Authority> authorities = new HashSet<>();
-
     @Override
-    public int hashCode() {
-        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
-        return getClass().hashCode();
+    public String toString() {
+        return "Account{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", state=" + state +
+                ", roles=" + roles +
+                ", authorities=" + authorities +
+                '}';
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (getClass() != o.getClass()) return false;
+        Account account = (Account) o;
+        return Objects.equals(id, account.id) && Objects.equals(email, account.email) && Objects.equals(password, account.password) && state == account.state && Objects.equals(roles, account.roles) && Objects.equals(authorities, account.authorities);
+    }
+
+    //<editor-fold desc="Spring Security Implementation">
+    @Override
     public String getUsername() {
-        return getEmail();
+        return email;
     }
 
     @Override
@@ -91,14 +107,5 @@ public class Account implements UserDetails {
     public boolean isEnabled() {
         return getState().getValue() >= AccountState.DISABLED.getValue();
     }
-
-    @Override
-    public Set<Authority> getAuthorities() {
-        return Stream.concat(
-                        roles.stream()
-                                .map(Role::getAuthorities)
-                                .flatMap(Collection::stream),
-                        authorities.stream())
-                .collect(Collectors.toSet());
-    }
+    //</editor-fold>
 }

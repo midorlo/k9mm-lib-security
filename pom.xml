@@ -1,30 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+
     <modelVersion>4.0.0</modelVersion>
+	
+	<parent>
+        <groupId>com.midorlo.k9</groupId>
+        <artifactId>k9-bom</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+    </parent>
+	
+    <artifactId>k9-lib-security</artifactId>
 
-    <artifactId>security</artifactId>
-
-    <name>security</name>
+    <name>LibSecurity</name>
+	
     <description>Spring Security implementation using json web tokens</description>
 
     <properties>
         <jjwt-jackson.version>0.11.2</jjwt-jackson.version>
     </properties>
 
-    <parent>
-        <artifactId>k9-bom</artifactId>
-        <groupId>com.midorlo</groupId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
 
     <dependencies>
         <dependency>
             <groupId>com.midorlo.k9</groupId>
             <artifactId>core</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <version>2.5.4</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -60,6 +65,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+            <scope>compile</scope>
             <version>42.2.23</version>
         </dependency>
         <!--Lombok-->
@@ -79,13 +85,7 @@
                 </profile.description>
             </properties>
             <dependencies>
-                <!--Postgresql-->
-                <dependency>
-                    <groupId>org.postgresql</groupId>
-                    <artifactId>postgresql</artifactId>
-                    <version>42.2.23</version>
-                    <scope>optional</scope>
-                </dependency>
+
                 <dependency>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-actuator</artifactId>

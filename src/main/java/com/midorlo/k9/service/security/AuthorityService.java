@@ -5,6 +5,7 @@ import com.midorlo.k9.repository.security.AuthorityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+@SuppressWarnings("unused")
 @Service
 @RequiredArgsConstructor
 public class AuthorityService {

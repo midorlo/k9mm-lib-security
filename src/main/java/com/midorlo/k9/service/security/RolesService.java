@@ -4,6 +4,7 @@ import com.midorlo.k9.domain.security.Role;
 import com.midorlo.k9.repository.security.RoleRepository;
 import org.springframework.stereotype.Service;
 
+@SuppressWarnings("unused")
 @Service
 public class RolesService {
 

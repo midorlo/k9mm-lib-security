@@ -1,6 +1,6 @@
 package com.midorlo.k9.components.security.filters;
 
-import com.midorlo.k9.service.security.AuthenticationService;
+import com.midorlo.k9.service.security.AccountsService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -18,10 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
 
-    private final AuthenticationService authenticationService;
+    private final AccountsService accountsService;
 
-    public AuthenticationFilter(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public AuthenticationFilter(AccountsService accountsService) {
+        this.accountsService = accountsService;
     }
 
     @Override
@@ -29,8 +29,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     FilterChain chain) {
-
-        authenticationService.authenticate(request);
+        accountsService.authenticate(request);
         chain.doFilter(request, response);
     }
 }

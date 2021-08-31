@@ -1,11 +1,13 @@
 package com.midorlo.k9.domain.security;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,9 +15,9 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
-public class Role {
+@RequiredArgsConstructor
+public class Role extends AbstractAuditingK9Entity {
 
-    @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
@@ -30,13 +32,6 @@ public class Role {
     @ToString.Exclude
     private Set<Authority> authorities;
 
-    public Role() {
-    }
-
-    public Role(String name) {
-        this.name = name;
-    }
-
     public Role(String name, Set<Authority> authorities) {
         this.name = name;
         this.authorities = authorities;
@@ -46,16 +41,15 @@ public class Role {
         this(name, Set.of(authority));
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        Role role = (Role) o;
-        return Objects.equals(id, role.id);
+    public Role(String name) {
+        this(name, new HashSet<>());
     }
 
     @Override
-    public int hashCode() {
-        return 0;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        Role role = (Role) o;
+        return Objects.equals(id, role.id);
     }
 }

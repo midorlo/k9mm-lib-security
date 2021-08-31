@@ -1,5 +1,6 @@
-package com.midorlo.k9.config;
+package com.midorlo.k9.config.security;
 
+import com.midorlo.k9.components.security.filters.AuthenticationFilter;
 import com.midorlo.k9.service.security.AccountsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -8,13 +9,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -35,17 +36,12 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private final AccountsService accountsService;
-//    private final AuthenticationFilter authenticationFilter;
-//    private final AuthorizationFilter authorizationFilter;
+    private final AuthenticationFilter authenticationFilter;
 
-    public SecurityConfiguration(AccountsService accountsService
-//                                 AuthenticationFilter authenticationFilter,
-//                                 AuthorizationFilter authorizationFilter
-    ) {
+    public SecurityConfiguration(AccountsService accountsService, AuthenticationFilter authenticationFilter) {
 
         this.accountsService = accountsService;
-//        this.authenticationFilter = authenticationFilter;
-//        this.authorizationFilter = authorizationFilter;
+        this.authenticationFilter = authenticationFilter;
     }
 
     /**
@@ -87,12 +83,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        log.info("configure({})", web);
-        super.configure(web);
-    }
-
-    @Override
     public void configure(HttpSecurity http) throws Exception {
         log.info("configure({})", http);
         http
@@ -114,13 +104,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint((request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
                 .and()
 
-                // Set authorization rules
+                // Inject JWT Authentication
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
+                // Inject Custom Authorization
                 .authorizeRequests()
-                .antMatchers("/**").anonymous()
-                .and()
-//                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-//                .addFilterAfter(authorizationFilter, AuthenticationFilter.class)
-        ;
+
+                // Leave a single antMatcher as a Spring Security requirement
+                .antMatchers("/").anonymous();
     }
 
     /**
