@@ -1,10 +1,7 @@
 package com.midorlo.k9.domain.security;
 
 import com.midorlo.k9.domain.security.property.AccountState;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
@@ -63,6 +60,7 @@ public class Account extends AbstractAuditingK9Entity implements UserDetails {
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "Account{" +
                 "id=" + id +

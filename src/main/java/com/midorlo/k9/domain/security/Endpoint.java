@@ -1,7 +1,7 @@
 package com.midorlo.k9.domain.security;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
@@ -35,6 +35,7 @@ public class Endpoint extends AbstractAuditingK9Entity {
     }
 
     @Override
+    @NonNull
     public String toString() {
         return "Endpoint{" +
                 "id=" + id +

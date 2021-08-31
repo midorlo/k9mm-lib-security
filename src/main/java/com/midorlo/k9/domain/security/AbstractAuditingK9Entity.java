@@ -1,7 +1,6 @@
 package com.midorlo.k9.domain.security;
 
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.AbstractAuditable;
 
 import javax.persistence.MappedSuperclass;

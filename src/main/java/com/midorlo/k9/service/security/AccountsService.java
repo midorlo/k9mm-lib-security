@@ -3,7 +3,8 @@ package com.midorlo.k9.service.security;
 import com.midorlo.k9.domain.security.Account;
 import com.midorlo.k9.repository.security.AccountRepository;
 import com.midorlo.k9.service.security.dto.LoginDto;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -40,6 +43,31 @@ public class AccountsService {
 
     public Optional<Account> findAccountByEmail(String email) {
         return accountRepository.findAccountByEmail(email);
+    }
+
+    /**
+     * Get the login of the current account.
+     *
+     * @return the login of the current account.
+     */
+    public Optional<String> getPrincipal() {
+        SecurityContext securityContext = SecurityContextHolder.getContext();
+        return Optional.ofNullable(getPrincipal(securityContext.getAuthentication()));
+    }
+
+    /**
+     * Get the login of the current account by its authentication.
+     *
+     * @return the login of the current account.
+     */
+    private String getPrincipal(Authentication authentication) {
+        String principal = null;
+        if (authentication != null && authentication.getPrincipal() != null) {
+            principal = (authentication.getPrincipal() instanceof String)
+                    ? (String) authentication.getPrincipal()
+                    : ((UserDetails) authentication.getPrincipal()).getUsername();
+        }
+        return principal;
     }
 
     String resolveAuthorization(HttpServletRequest request) {
