@@ -1,4 +1,4 @@
-package com.midorlo.k9.config.security;
+package com.midorlo.k9.configuration.security;
 
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
