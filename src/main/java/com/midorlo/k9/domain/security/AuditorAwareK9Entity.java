@@ -7,7 +7,7 @@ import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
 @NoArgsConstructor
-public abstract class AbstractAuditingK9Entity extends AbstractAuditable<Account, Long> {
+public abstract class AuditorAwareK9Entity extends AbstractAuditable<Account, Long> {
 
     /**
      * <p>Implement {@link #hashCode()} for all definitions under this.</p>
@@ -23,7 +23,6 @@ public abstract class AbstractAuditingK9Entity extends AbstractAuditable<Account
     public final int hashCode() {
         return getClass().hashCode();
     }
-
 
     /**
      * Force an {@link #equals(Object)} implementation.

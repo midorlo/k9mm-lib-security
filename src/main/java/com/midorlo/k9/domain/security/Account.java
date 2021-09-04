@@ -2,7 +2,6 @@ package com.midorlo.k9.domain.security;
 
 import com.midorlo.k9.domain.security.property.AccountState;
 import lombok.*;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
@@ -10,16 +9,12 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-/**
- * @implNote Full implementation of {@link UserDetails}
- */
-
 @Getter
 @Setter
 @Entity(name = "account")
 @Table(name = "accounts", schema = "security")
 @RequiredArgsConstructor
-public class Account extends AbstractAuditingK9Entity implements UserDetails {
+public class Account extends AuditorAwareK9Entity {
 
     @Column(name = "id", nullable = false)
     private Long id;
@@ -30,6 +25,8 @@ public class Account extends AbstractAuditingK9Entity implements UserDetails {
     @Column(name = "password", nullable = false)
     @ToString.Exclude
     private String password;
+
+
 
     @Enumerated
     @Column(name = "state", nullable = false)
@@ -79,31 +76,4 @@ public class Account extends AbstractAuditingK9Entity implements UserDetails {
         Account account = (Account) o;
         return Objects.equals(id, account.id) && Objects.equals(email, account.email) && Objects.equals(password, account.password) && state == account.state && Objects.equals(roles, account.roles) && Objects.equals(authorities, account.authorities);
     }
-
-    //<editor-fold desc="Spring Security Implementation">
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return getState().equals(AccountState.ACTIVE);
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return getState().getValue() >= AccountState.SANCTIONED.getValue();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return getState().getValue() >= AccountState.EXPIRED_PASSWORD.getValue();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return getState().getValue() >= AccountState.DISABLED.getValue();
-    }
-    //</editor-fold>
 }

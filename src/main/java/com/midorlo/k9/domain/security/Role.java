@@ -16,7 +16,7 @@ import java.util.Set;
 @Setter
 @ToString
 @RequiredArgsConstructor
-public class Role extends AbstractAuditingK9Entity {
+public class Role extends AuditorAwareK9Entity {
 
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)

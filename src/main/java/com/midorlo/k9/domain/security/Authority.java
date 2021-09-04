@@ -16,7 +16,7 @@ import java.util.Objects;
 @Setter
 @RequiredArgsConstructor
 @ToString
-public class Authority extends AbstractAuditingK9Entity implements GrantedAuthority {
+public class Authority extends AuditorAwareK9Entity implements GrantedAuthority {
 
     @Column(name = "id", nullable = false)
     private Long id;

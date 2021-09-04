@@ -13,7 +13,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class Endpoint extends AbstractAuditingK9Entity {
+public class Endpoint extends AuditorAwareK9Entity {
 
     public Endpoint(String servletPath) {
         this.servletPath = servletPath;
