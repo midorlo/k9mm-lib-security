@@ -17,10 +17,10 @@ import org.springframework.http.HttpMethod;
 @SpringBootApplication
 @EnableConfigurationProperties
 @Slf4j
-public class InitSecurity {
+public class LibSecurity {
 
     public static void main(String[] args) {
-        SpringApplication.run(InitSecurity.class, args);
+        SpringApplication.run(LibSecurity.class, args);
     }
 
     @Bean
