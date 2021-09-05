@@ -9,5 +9,9 @@ import java.util.Optional;
 
 public interface AuthorityRepository extends JpaRepository<Authority, Long> {
 
-    Optional<Authority> findByEndpoint_ServletPathEqualsIgnoreCaseAndMethodEquals(@NonNull String servletPath, @NonNull HttpMethod method);
+
+    Optional<Authority> findByRestMeta_ServletPathEqualsIgnoreCaseAndMethodEquals(
+            @NonNull String servletPath,
+            @NonNull HttpMethod method
+    );
 }

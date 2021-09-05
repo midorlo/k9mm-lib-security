@@ -1,5 +1,6 @@
 package com.midorlo.k9.domain.security;
 
+import com.midorlo.k9.domain.security.util.AuditorAwareK9Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,13 +15,8 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-@ToString
 @RequiredArgsConstructor
 public class Role extends AuditorAwareK9Entity {
-
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -50,6 +46,6 @@ public class Role extends AuditorAwareK9Entity {
         if (this == o) return true;
         if (Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
         Role role = (Role) o;
-        return Objects.equals(id, role.id);
+        return Objects.equals(getId(), role.getId());
     }
 }

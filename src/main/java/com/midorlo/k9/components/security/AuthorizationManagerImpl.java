@@ -47,7 +47,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager<HttpServle
     public AuthorizationDecision check(Supplier<Authentication> supplier, HttpServletRequest request) {
         log.info("check({}, {})", supplier, request);
         Authentication authentication = resolveSupplier(supplier);
-        boolean result = authorityRepository.findByEndpoint_ServletPathEqualsIgnoreCaseAndMethodEquals(
+        boolean result = authorityRepository.findByRestMeta_ServletPathEqualsIgnoreCaseAndMethodEquals(
                         request.getServletPath(),
                         HttpMethod.valueOf(request.getMethod()))
                 .map(authority -> authentication != null && authentication.getAuthorities()

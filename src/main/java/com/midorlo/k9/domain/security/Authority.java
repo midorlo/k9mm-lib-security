@@ -1,37 +1,36 @@
 package com.midorlo.k9.domain.security;
 
+import com.midorlo.k9.domain.security.util.AuditorAwareK9Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Objects;
 
-@Entity(name = "authorities")
+@Entity(name = Authority.ENTITY_NAME)
 @Getter
 @Setter
 @RequiredArgsConstructor
-@ToString
-public class Authority extends AuditorAwareK9Entity implements GrantedAuthority {
+public class Authority extends AuditorAwareK9Entity {
 
-    @Column(name = "id", nullable = false)
-    private Long id;
-
-    @Enumerated
-    @Column(name = "http_method", nullable = false)
+    public static final String ENTITY_NAME = "authorities";
+    public static final String COLUMN_METHOD_NAME = "http_method";
+    @Enumerated(EnumType.STRING)
+    @Column(name = COLUMN_METHOD_NAME, nullable = false)
     private HttpMethod method;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH}, optional = false)
-    @JoinColumn(name = "endpoint_id", nullable = false)
-    private Endpoint endpoint;
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH },
+            optional = false)
+    @JoinColumn(name = "id_rest_meta", nullable = false)
+    private RestMeta restMeta;
 
-    public Authority(HttpMethod method, Endpoint endpoint) {
+    public Authority(HttpMethod method, RestMeta restMeta) {
         this.method = method;
-        this.endpoint = endpoint;
+        this.restMeta = restMeta;
     }
 
     @Override
@@ -42,10 +41,7 @@ public class Authority extends AuditorAwareK9Entity implements GrantedAuthority 
         return Objects.equals(getId(), authority.getId());
     }
 
-    //<editor-fold desc="Spring Security Implementation">
-    @Override
     public String getAuthority() {
-        return endpoint.getServletPath() + ":" + method;
+        return restMeta.getServletPath() + ":" + method;
     }
-    //</editor-fold>
 }

@@ -2,8 +2,8 @@ package com.midorlo.k9.configuration.security;
 
 import com.midorlo.k9.components.security.AuthenticationFilter;
 import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.model.projection.security.AuditorAwareUserDetails;
-import com.midorlo.k9.service.security.AccountsService;
+import com.midorlo.k9.model.security.AuditorAwareUserDetailsImpl;
+import com.midorlo.k9.service.security.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,24 +46,15 @@ import static com.midorlo.k9.components.security.AuditorAwareImpl.AUDITOR_AWARE_
         jsr250Enabled = true,
         prePostEnabled = true
 )
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+public class SecurityModuleConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
 
-    private final AccountsService accountsService;
+    private final AccountService accountService;
     private final AuthenticationFilter authenticationFilter;
 
-    public SecurityConfiguration(AccountsService accountsService, AuthenticationFilter authenticationFilter) {
+    public SecurityModuleConfiguration(AccountService accountService, AuthenticationFilter authenticationFilter) {
 
-        this.accountsService = accountsService;
+        this.accountService = accountService;
         this.authenticationFilter = authenticationFilter;
-    }
-
-    /**
-     * Configure password encoding schema
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        log.info("passwordEncoder()");
-        return new BCryptPasswordEncoder();
     }
 
     /**
@@ -91,9 +82,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter implemen
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         log.info("configure({})", auth);
         auth.userDetailsService(login -> {
-            Account account = accountsService.findAccountByEmail(login)
+            Account account = accountService.findAccountByEmail(login)
                     .orElseThrow(() -> new UsernameNotFoundException(login));
-            return new AuditorAwareUserDetails(account);
+            return new AuditorAwareUserDetailsImpl(account);
         });
     }
 

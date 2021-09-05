@@ -1,46 +1,49 @@
 package com.midorlo.k9.domain.security.property;
 
+/**
+ * Possible States of an {@link com.midorlo.k9.domain.security.Account}
+ */
 public enum AccountState {
 
     /**
      * Alive.
      */
-    ACTIVE(0),
+    ACTIVATED(0),
 
     /**
      * Newly registered.
      */
-    ACTIVATION_REQUIRED(1),
+    INACTIVE_REQUIRES_EMAIL(1),
 
     /**
      * Within a 2fa flow.
      */
-    EXPIRED_PASSWORD(2),
+    INACTIVE_REQUIRES_PASSWORD(2),
 
     /**
      * Planned revocation.
      */
-    EXPIRED_SUBSCRIPTION(3),
+    INACTIVE_EXPIRED(3),
 
     /**
      * User disabled his account.
      */
-    DISABLED(4),
+    INACTIVE_DISABLED(4),
 
     /**
      * Operator disabled this account.
      */
-    SANCTIONED(5),
+    INACTIVE_SANCTIONED(5),
 
     /**
      * Scheduler disabled this account.
      */
-    BANNED(6),
+    INACTIVE_FORCED(6),
 
     /**
      * Account disabled and frozen on behalf of a law enforcement agency.
      */
-    LEA(7);
+    INACTIVE_LEA(7);
 
     private final Integer value;
 
