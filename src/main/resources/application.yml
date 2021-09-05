@@ -2,4 +2,18 @@ k9:
   fqdn: k9.midorlo.com
   security:
     strategy: MODE_INHERITABLETHREADLOCAL
-    secret: zdtlD3JK56m6wTTgsNFhqzjqP
+    key: MzgxNjBhNzIxMzM0MjFhMGE1M2Q1YTY4NWQ2MTcyODhjYTc3MTI1MzkzZDM5NWFmODFmMTYxOTJlNzIxMGM4NWQ2MjI0NTIyODM4ZTQxNDUzMTE0NzhjN2E0NzE2M2MxMzg0MjhhNWRkYjA4M2FiZjY0OWYxYWI3N2UwNTlhNGE
+    issuer: k9.midorlo.de
+
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    generate-ddl: off
+  sql:
+    init:
+      platform: postgres
+      mode: always
+  output:
+    ansi:
+      enabled: always
