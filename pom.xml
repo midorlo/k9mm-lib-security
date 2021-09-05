@@ -1,28 +1,42 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0">
 
     <modelVersion>4.0.0</modelVersion>
-	
-	<parent>
+
+    <parent>
         <groupId>com.midorlo.k9</groupId>
         <artifactId>k9-bom</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
-	
+
     <artifactId>k9-lib-security</artifactId>
 
-    <name>LibSecurity</name>
-	
+    <name>[Lib] Security</name>
+
     <description>Spring Security implementation using json web tokens</description>
 
     <properties>
         <jjwt-jackson.version>0.11.2</jjwt-jackson.version>
+        <k9-lib-core.version>0.0.1-SNAPSHOT</k9-lib-core.version>
     </properties>
-
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>com.midorlo.k9</groupId>
             <artifactId>k9-lib-core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.midorlo.k9</groupId>
+            <artifactId>k9-lib-shared-models</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
