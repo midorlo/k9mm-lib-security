@@ -13,4 +13,6 @@ public class SecurityProperties {
 
     @Value("${k9.security.key}")
     private String key;
+
+
 }

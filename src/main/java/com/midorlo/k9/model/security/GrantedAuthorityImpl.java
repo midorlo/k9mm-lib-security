@@ -1,4 +1,4 @@
-package com.midorlo.k9.model.security.projection;
+package com.midorlo.k9.model.security;
 
 import com.midorlo.k9.domain.security.Authority;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +11,6 @@ public class GrantedAuthorityImpl implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return authority.getAuthority();
+        return authority.getRestResourceMetadata().getServletPath() + ":" + authority.getMethod();
     }
 }

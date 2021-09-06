@@ -13,7 +13,7 @@ public class AuthorityResourceService {
     private final AuthorityRepository authorityRepository;
 
     public Authority createIfNotExists(Authority authority) {
-        return authorityRepository.findByRestMeta_ServletPathEqualsIgnoreCaseAndMethodEquals(authority.getRestMeta().getServletPath(), authority.getMethod())
+        return authorityRepository.findByRestMeta_ServletPathEqualsIgnoreCaseAndMethodEquals(authority.getRestResourceMetadata().getServletPath(), authority.getMethod())
                 .orElse(authorityRepository.save(authority));
     }
 }

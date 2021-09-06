@@ -1,6 +1,6 @@
 package com.midorlo.k9.service.security;
 
-import com.midorlo.k9.domain.security.RestMeta;
+import com.midorlo.k9.domain.security.RestResourceMetadata;
 import com.midorlo.k9.repository.security.RestMetaRepository;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +13,9 @@ public class EndpointService {
         this.restMetaRepository = restMetaRepository;
     }
 
-    public RestMeta createEndpointIfNotExists(RestMeta restMeta) {
+    public RestResourceMetadata createEndpointIfNotExists(RestResourceMetadata restResourceMetadata) {
         return restMetaRepository
-                .findByServletPathEqualsIgnoreCase(restMeta.getServletPath())
-                .orElse(restMetaRepository.save(restMeta));
+                .findByServletPathEqualsIgnoreCase(restResourceMetadata.getServletPath())
+                .orElse(restMetaRepository.save(restResourceMetadata));
     }
 }

@@ -80,24 +80,54 @@ public class Account extends NamedAuditorAwareK9Entity {
     @ToString.Exclude
     private Set<Authority> authorities = new HashSet<>();
 
+    //<editor-fold desc="Constructor">
+
+    public Account(
+            String email,
+            String password,
+            AccountState state,
+            Collection<Role> roles,
+            Set<Authority> authorities
+    ) {
+        this.email = email;
+        this.password = password;
+        this.state = state;
+        this.roles.addAll(roles);
+        this.authorities.addAll(authorities);
+    }
+
     public Account(
             String name,
             String email,
             String password,
-            Role primaryRole,
-            AccountState state
+            AccountState state,
+            Role primaryRole
     ) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.roles.add(primaryRole);
         this.state = state;
+        this.roles.add(primaryRole);
     }
 
     public Account(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public Account(
+            String name,
+            String email,
+            String password,
+            AccountState state,
+            Collection<Role> roles
+    ) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.state = state;
+        this.roles.addAll(roles);
     }
 
     public Account(
@@ -115,6 +145,24 @@ public class Account extends NamedAuditorAwareK9Entity {
         this.state = state;
         this.authorities.addAll(authorities);
     }
+
+    public Account(
+            String name,
+            String email,
+            String password,
+            AccountState state,
+            Role primaryRole,
+            Collection<Authority> authorities
+    ) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.roles.add(primaryRole);
+        this.state = state;
+        this.authorities.addAll(authorities);
+    }
+
+    //</editor-fold>
 
     @Override
     public boolean equals(Object o) {

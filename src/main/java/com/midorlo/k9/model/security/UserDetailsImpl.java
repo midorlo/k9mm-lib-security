@@ -4,7 +4,6 @@ import com.midorlo.k9.domain.security.Account;
 import com.midorlo.k9.domain.security.Authority;
 import com.midorlo.k9.domain.security.Role;
 import com.midorlo.k9.domain.security.property.AccountState;
-import com.midorlo.k9.model.security.projection.GrantedAuthorityImpl;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.GrantedAuthoritiesContainer;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,12 +13,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class AuditorAwareUserDetailsImpl implements UserDetails,
-                                                    GrantedAuthoritiesContainer {
+public class UserDetailsImpl implements UserDetails,
+                                        GrantedAuthoritiesContainer {
 
     private final Account account;
 
-    public AuditorAwareUserDetailsImpl(Account Account) {
+    public UserDetailsImpl(Account Account) {
         this.account = Account;
     }
 
@@ -41,14 +40,14 @@ public class AuditorAwareUserDetailsImpl implements UserDetails,
     @Override
     public Collection<? extends GrantedAuthority> getGrantedAuthorities() {
         Stream<Authority> authorityStream = account.getAuthorities()
-                .stream();
+                                                   .stream();
         Stream<Authority> rolesAuthoritiesStream = account.getRoles()
-                .stream()
-                .map(Role::getAuthorities)
-                .flatMap(Collection::stream);
+                                                          .stream()
+                                                          .map(Role::getAuthorities)
+                                                          .flatMap(Collection::stream);
         return Stream.concat(authorityStream, rolesAuthoritiesStream)
-                .map(GrantedAuthorityImpl::new)
-                .collect(Collectors.toList());
+                     .map(GrantedAuthorityImpl::new)
+                     .collect(Collectors.toList());
     }
 
     @Override

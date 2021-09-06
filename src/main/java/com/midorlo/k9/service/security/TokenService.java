@@ -2,7 +2,7 @@ package com.midorlo.k9.service.security;
 
 import com.midorlo.k9.configuration.security.SecurityProperties;
 import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.domain.security.Authority;
+import com.midorlo.k9.model.security.GrantedAuthorityImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -61,7 +61,8 @@ public class TokenService {
 
         String authorities = account.getAuthorities()
                 .stream()
-                .map(Authority::getAuthority)
+                .map(GrantedAuthorityImpl::new)
+                .map(GrantedAuthorityImpl::getAuthority)
                 .collect(Collectors.joining(","));
 
         String token = Jwts.builder()

@@ -27,9 +27,4 @@ public abstract class AuditorAwareK9Entity extends AbstractAuditable<Account, Lo
     public final int hashCode() {
         return getClass().hashCode();
     }
-
-    /**
-     * Force an {@link #equals(Object)} implementation.
-     */
-    public abstract boolean equals(Object o);
 }

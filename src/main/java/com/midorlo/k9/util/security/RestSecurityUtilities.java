@@ -2,6 +2,7 @@ package com.midorlo.k9.util.security;
 
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,12 +10,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.EnumSet;
 
 public class RestSecurityUtilities {
 
     public static final String HEADER_NAME = "Authorization";
     public static final String HEADER_LINKS_FORMATTER = "<{0}>; rel=\"{1}\"";
     public static final String HEADER_X_TOTAL_COUNT = "X-Total-Count";
+
+    EnumSet<HttpMethod> ALL_METHODS =EnumSet.allOf(HttpMethod.class);
 
     /**
      * Creates a http header containing the given json web token.

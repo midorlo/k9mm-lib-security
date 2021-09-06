@@ -2,7 +2,7 @@ package com.midorlo.k9;
 
 import com.midorlo.k9.domain.security.Account;
 import com.midorlo.k9.domain.security.Authority;
-import com.midorlo.k9.domain.security.RestMeta;
+import com.midorlo.k9.domain.security.RestResourceMetadata;
 import com.midorlo.k9.domain.security.Role;
 import com.midorlo.k9.domain.security.property.AccountState;
 import com.midorlo.k9.service.security.AccountService;
@@ -39,16 +39,16 @@ public class LibSecurity implements ApplicationListener<ContextRefreshedEvent> {
         return args -> {
             log.info("Initializing Module Security");
 
-            Authority devRegGetAuthority = new Authority(HttpMethod.GET, new RestMeta("/dev/reg"));
-            Authority devOpGetAuthority = new Authority(HttpMethod.GET, new RestMeta("/dev/op"));
+            Authority devRegGetAuthority = new Authority(HttpMethod.GET, new RestResourceMetadata("/dev/reg"));
+            Authority devOpGetAuthority = new Authority(HttpMethod.GET, new RestResourceMetadata("/dev/op"));
 
             Role userRole = new Role("User", devRegGetAuthority);
             Role adminRole = new Role("Administrator", devOpGetAuthority);
 
             Account userAccount = accountService.createIfNotExists(new Account("user", "user@localhost", "user",
-                    userRole, AccountState.ACTIVATED));
+                    AccountState.ACTIVATED, userRole));
             Account adminAccount = accountService.createIfNotExists(new Account("admin", "admin@localhost", "admin",
-                    adminRole, AccountState.ACTIVATED));
+                    AccountState.ACTIVATED, adminRole));
 
             log.info("Created Accounts {}, {} and theirs complete access models", userAccount, adminAccount);
         };

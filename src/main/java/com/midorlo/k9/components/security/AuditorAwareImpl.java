@@ -1,7 +1,7 @@
 package com.midorlo.k9.components.security;
 
 import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.model.security.AuditorAwareUserDetailsImpl;
+import com.midorlo.k9.model.security.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.lang.NonNull;
@@ -22,6 +22,6 @@ public class AuditorAwareImpl implements AuditorAware<Account> {
     @Override
     @NonNull
     public Optional<Account> getCurrentAuditor() {
-        return Optional.of(((AuditorAwareUserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount());
+        return Optional.of(((UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getAccount());
     }
 }

@@ -2,7 +2,7 @@ package com.midorlo.k9.service.security;
 
 import com.midorlo.k9.configuration.security.SecurityProperties;
 import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.model.security.AuditorAwareUserDetailsImpl;
+import com.midorlo.k9.model.security.UserDetailsImpl;
 import com.midorlo.k9.model.security.LoginDto;
 import com.midorlo.k9.model.security.mapper.AuthorityMapper;
 import com.midorlo.k9.repository.security.AccountRepository;
@@ -58,7 +58,7 @@ public class AuthenticationService {
      */
     public ResponseEntity<Account> handleLogin(LoginDto loginDto) {
         Authentication authentication = authenticate(loginDto);
-        Account account = ((AuditorAwareUserDetailsImpl) authentication.getPrincipal()).getAccount();
+        Account account = ((UserDetailsImpl) authentication.getPrincipal()).getAccount();
         String token = tokenService.createNewAuthenticationToken(account, loginDto.isRemember());
 
         return ResponseEntity.ok()

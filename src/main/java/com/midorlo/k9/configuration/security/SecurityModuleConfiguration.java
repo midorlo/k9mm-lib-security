@@ -2,7 +2,7 @@ package com.midorlo.k9.configuration.security;
 
 import com.midorlo.k9.components.security.AuthenticationFilter;
 import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.model.security.AuditorAwareUserDetailsImpl;
+import com.midorlo.k9.model.security.UserDetailsImpl;
 import com.midorlo.k9.service.security.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -19,8 +19,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
@@ -84,7 +82,7 @@ public class SecurityModuleConfiguration extends WebSecurityConfigurerAdapter im
         auth.userDetailsService(login -> {
             Account account = accountService.findAccountByEmail(login)
                     .orElseThrow(() -> new UsernameNotFoundException(login));
-            return new AuditorAwareUserDetailsImpl(account);
+            return new UserDetailsImpl(account);
         });
     }
 

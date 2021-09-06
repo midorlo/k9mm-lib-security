@@ -1,5 +1,6 @@
 package com.midorlo.k9.components.security;
 
+import com.midorlo.k9.model.security.GrantedAuthorityImpl;
 import com.midorlo.k9.repository.security.AuthorityRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
@@ -52,7 +53,7 @@ public class AuthorizationManagerImpl implements AuthorizationManager<HttpServle
                         HttpMethod.valueOf(request.getMethod()))
                 .map(authority -> authentication != null && authentication.getAuthorities()
                         .stream().map(GrantedAuthority::getAuthority)
-                        .anyMatch(s -> s.equals(authority.getAuthority())))
+                        .anyMatch(s -> s.equals(new GrantedAuthorityImpl(authority).getAuthority())))
                 .orElse(true);
         return new AuthorizationDecision(result);
     }

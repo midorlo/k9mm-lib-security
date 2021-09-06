@@ -1,7 +1,7 @@
 package com.midorlo.k9.model.security.mapper;
 
 import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.model.security.projection.GrantedAuthorityImpl;
+import com.midorlo.k9.model.security.GrantedAuthorityImpl;
 
 import java.util.Collection;
 import java.util.stream.Collectors;

@@ -1,6 +1,6 @@
 package com.midorlo.k9.service.security;
 
-import com.midorlo.k9.model.security.AuditorAwareUserDetailsImpl;
+import com.midorlo.k9.model.security.UserDetailsImpl;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,7 +40,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public @NonNull UserDetails loadUserByUsername(final String email) {
         return accountService
                 .findAccountByEmail(email)
-                .map(AuditorAwareUserDetailsImpl::new)
+                .map(UserDetailsImpl::new)
                 .orElseThrow(EntityNotFoundException::new);
     }
 }
