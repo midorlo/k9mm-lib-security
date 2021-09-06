@@ -1,8 +1,8 @@
 package com.midorlo.k9.service.security;
 
+import com.midorlo.k9.domain.core.ServletPath;
 import com.midorlo.k9.domain.security.Account;
 import com.midorlo.k9.domain.security.Authority;
-import com.midorlo.k9.domain.security.RestResourceMetadata;
 import com.midorlo.k9.domain.security.Role;
 import com.midorlo.k9.domain.security.property.AccountState;
 import com.midorlo.k9.repository.security.AccountRepository;
@@ -45,7 +45,7 @@ public class AccountService {
                                                   String roleName,
                                                   String servletPath,
                                                   Collection<HttpMethod> methodsAllowed) {
-        RestResourceMetadata restResourceMetadata = new RestResourceMetadata(servletPath);
+        ServletPath restResourceMetadata = new ServletPath(servletPath);
         Set<Authority> authorities = methodsAllowed.stream()
                                                    .map(m -> new Authority(m, restResourceMetadata))
                                                    .collect(Collectors.toSet());

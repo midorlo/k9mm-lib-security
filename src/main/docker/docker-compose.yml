@@ -1,0 +1,40 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+networks:
+  k9-bridged-network:
+    driver: bridge
+
+services:
+
+  ##############################################################################
+  # Bend Application                                                           #
+  ##############################################################################
+  k9-lib-security:
+    container_name: k9-lib-security
+    build:
+      context: ../../../
+      dockerfile: src/main/docker/Dockerfile
+    image: k9-lib-security:latest
+    ports:
+      - "8080:8080"
+    networks:
+      - k9-bridged-network
+    volumes:
+      - ../../../../.data/volumes/security:/data
+
+#  ##############################################################################
+#  # Postgres Database                                                          #
+#  ##############################################################################
+#  db:
+#    image: postgres
+#    restart: always
+#    environment:
+#      POSTGRES_USER: k9
+#      POSTGRES_PASSWORD: k9
+#    ports:
+#      - "5000:5432"
+#    networks:
+#      - k9-bridged-network
+#    volumes:
+#      - postgres-data:~/.k9/volumes/postgres

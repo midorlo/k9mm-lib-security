@@ -21,7 +21,7 @@ public class Role extends AuditorAwareK9Entity {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "roles_authorities",
             joinColumns = @JoinColumn(name = "id_role", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "id_authority", referencedColumnName = "id"))

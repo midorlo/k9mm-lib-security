@@ -1,5 +1,6 @@
 package com.midorlo.k9.domain.security;
 
+import com.midorlo.k9.domain.core.ServletPath;
 import com.midorlo.k9.domain.security.util.AuditorAwareK9Entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,11 @@ public class Authority extends AuditorAwareK9Entity {
 
     @JoinColumn(name = ID_REST_METADATA, nullable = false)
     @ManyToOne(optional = false, fetch = FetchType.EAGER,
-               cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    private RestResourceMetadata restResourceMetadata;
+               cascade = { CascadeType.MERGE })
+    private ServletPath servletPath;
 
-    public Authority(HttpMethod method, RestResourceMetadata restResourceMetadata) {
-        this.method               = method;
-        this.restResourceMetadata = restResourceMetadata;
+    public Authority(HttpMethod method, ServletPath servletPath) {
+        this.method      = method;
+        this.servletPath = servletPath;
     }
 }

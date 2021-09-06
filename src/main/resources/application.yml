@@ -8,12 +8,12 @@ k9:
 spring:
   jpa:
     hibernate:
-      ddl-auto: none
-    generate-ddl: off
-  sql:
-    init:
-      platform: postgres
-      mode: always
-  output:
-    ansi:
-      enabled: always
+      ddl-auto: create-drop
+#    generate-ddl: off
+#  sql:
+#    init:
+#      platform: postgres
+#      mode: always
+#  output:
+#    ansi:
+#      enabled: always

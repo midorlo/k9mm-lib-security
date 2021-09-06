@@ -14,11 +14,11 @@ import java.util.EnumSet;
 
 public class RestSecurityUtilities {
 
-    public static final String HEADER_NAME = "Authorization";
+    public static final String HEADER_NAME            = "Authorization";
     public static final String HEADER_LINKS_FORMATTER = "<{0}>; rel=\"{1}\"";
-    public static final String HEADER_X_TOTAL_COUNT = "X-Total-Count";
+    public static final String HEADER_X_TOTAL_COUNT   = "X-Total-Count";
 
-    EnumSet<HttpMethod> ALL_METHODS =EnumSet.allOf(HttpMethod.class);
+    public static EnumSet<HttpMethod> ALL_METHODS = EnumSet.allOf(HttpMethod.class);
 
     /**
      * Creates a http header containing the given json web token.
@@ -30,7 +30,7 @@ public class RestSecurityUtilities {
     public static HttpHeaders toHttpHeader(
             Authentication authentication,
             String jsonWebToken
-    ) {
+                                          ) {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HEADER_NAME, "Bearer " + jsonWebToken);
@@ -51,15 +51,15 @@ public class RestSecurityUtilities {
                 HEADER_LINKS_FORMATTER,
                 preparePageLink(uriBuilder, pageNumber, pageSize),
                 relType
-        );
+                                   );
     }
 
     protected static String preparePageLink(UriComponentsBuilder uriBuilder, int pageNumber, int pageSize) {
         return uriBuilder.replaceQueryParam("page", Integer.toString(pageNumber))
-                .replaceQueryParam("size", Integer.toString(pageSize))
-                .toUriString()
-                .replace(",", "%2C")
-                .replace(";", "%3B");
+                         .replaceQueryParam("size", Integer.toString(pageSize))
+                         .toUriString()
+                         .replace(",", "%2C")
+                         .replace(";", "%3B");
     }
 
     /**
@@ -72,11 +72,11 @@ public class RestSecurityUtilities {
     public static <E> HttpHeaders generatePaginationHttpHeaders(
             UriComponentsBuilder uriBuilder,
             Page<E> page
-    ) {
+                                                               ) {
 
-        int pageNumber = page.getNumber();
-        int pageSize = page.getSize();
-        StringBuilder link = new StringBuilder();
+        int           pageNumber = page.getNumber();
+        int           pageSize   = page.getSize();
+        StringBuilder link       = new StringBuilder();
 
         // include a "back" link
         if (pageNumber < page.getTotalPages() - 1) {
@@ -117,8 +117,8 @@ public class RestSecurityUtilities {
     public static Date getTokenValidity(boolean extended) {
         return new Date(
                 new Date().getTime() + 1000 * (extended
-                        ? 10000
-                        : 1000000)
+                                               ? 10000
+                                               : 1000000)
         );
     }
 }

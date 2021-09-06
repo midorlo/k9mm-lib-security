@@ -59,12 +59,7 @@ public class Account extends NamedAuditorAwareK9Entity {
     @Column(name = STATE, nullable = false, length = 2)
     private AccountState state;
 
-    @ManyToMany(
-            cascade = { CascadeType.PERSIST,
-                    CascadeType.MERGE,
-                    CascadeType.REFRESH,
-                    CascadeType.DETACH
-            }
+    @ManyToMany(cascade = { CascadeType.MERGE}
     )
     @JoinTable(name = ACCOUNTS_ROLES,
             joinColumns = @JoinColumn(name = ID_ACCOUNT, referencedColumnName = ID),
@@ -73,7 +68,7 @@ public class Account extends NamedAuditorAwareK9Entity {
     @ToString.Exclude
     private Collection<Role> roles = new HashSet<>();
 
-    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH })
+    @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(name = ACCOUNTS_AUTHORITIES,
             joinColumns = @JoinColumn(name = ID_ACCOUNT, referencedColumnName = ID),
             inverseJoinColumns = @JoinColumn(name = ID_AUTHORITY, referencedColumnName = ID))

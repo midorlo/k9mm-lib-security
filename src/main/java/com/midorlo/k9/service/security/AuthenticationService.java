@@ -30,24 +30,24 @@ import java.security.Key;
 public class AuthenticationService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
-    private final AccountRepository accountRepository;
-    private final SecurityProperties securityProperties;
-    private final TokenService tokenService;
-    private final Key encryptionKey;
-    private final JwtParser tokenParser;
+    private final AccountRepository            accountRepository;
+    private final SecurityProperties           securityProperties;
+    private final TokenService                 tokenService;
+    private final JwtParser                    tokenParser;
 
     public AuthenticationService(
             AuthenticationManagerBuilder authenticationManagerBuilder,
             AccountRepository accountRepository,
             SecurityProperties securityProperties,
-            TokenService tokenService
-    ) {
+            TokenService tokenService) {
+
         this.authenticationManagerBuilder = authenticationManagerBuilder;
-        this.accountRepository = accountRepository;
-        this.securityProperties = securityProperties;
-        this.tokenService = tokenService;
-        this.encryptionKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.securityProperties.getKey()));
-        this.tokenParser = Jwts.parserBuilder().setSigningKey(encryptionKey).build();
+        this.accountRepository            = accountRepository;
+        this.securityProperties           = securityProperties;
+        this.tokenService                 = tokenService;
+        this.tokenParser                  = Jwts.parserBuilder()
+                                                .setSigningKey(Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.securityProperties.getKey())))
+                                                .build();
     }
 
     /**
@@ -58,12 +58,12 @@ public class AuthenticationService {
      */
     public ResponseEntity<Account> handleLogin(LoginDto loginDto) {
         Authentication authentication = authenticate(loginDto);
-        Account account = ((UserDetailsImpl) authentication.getPrincipal()).getAccount();
-        String token = tokenService.createNewAuthenticationToken(account, loginDto.isRemember());
+        Account        account        = ((UserDetailsImpl) authentication.getPrincipal()).getAccount();
+        String         token          = tokenService.createNewAuthenticationToken(account, loginDto.isRemember());
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION, token)
-                .body(account);
+                             .header(HttpHeaders.AUTHORIZATION, token)
+                             .body(account);
     }
 
     /**
@@ -80,7 +80,7 @@ public class AuthenticationService {
                                 dto.getEmail(),
                                 dto.getPassword()
                         )
-                );
+                             );
     }
 
     /**
@@ -91,14 +91,14 @@ public class AuthenticationService {
     public void authenticate(HttpServletRequest request) {
 
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
-        String email = null;
+        String email  = null;
 
         if (StringUtils.hasText(header)
-                && header.startsWith("Bearer ")
-                && header.contains(" ")
-                && header.split(" ").length > 1) {
-            final String token = header.split(" ")[1].trim();
-            Claims claims = tokenService.resolveClaims(token, securityProperties.getKey());
+            && header.startsWith("Bearer ")
+            && header.contains(" ")
+            && header.split(" ").length > 1) {
+            final String token  = header.split(" ")[1].trim();
+            Claims       claims = tokenService.resolveClaims(token, securityProperties.getKey());
             if (claims != null) {
                 String subject = claims.getSubject();
                 if (subject != null) {
@@ -111,7 +111,8 @@ public class AuthenticationService {
 
             //toto smells
             accountRepository.findAccountByEmail(email).ifPresent(account -> {
-                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(account, null, AuthorityMapper.getAuthorities(account));
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(account, null,
+                                                                                                   AuthorityMapper.getAuthorities(account));
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             });
