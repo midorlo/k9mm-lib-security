@@ -12,7 +12,7 @@ public class AuthorityInfoMapper {
         Map<String, Map<HttpMethod, Long>> tree = new HashMap<>();
         for (Authority authority : authorityInfos) {
             Long       id          = authority.getId();
-            String     servletPath = authority.getServletPath().getPath();
+            String     servletPath = authority.getServletDescription().getPath();
             HttpMethod method      = authority.getMethod();
             if (!tree.containsKey(servletPath)) {
                 tree.put(servletPath, new HashMap<>());

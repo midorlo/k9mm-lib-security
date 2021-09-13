@@ -1,4 +1,4 @@
-package com.midorlo.k9.service.security;
+package com.midorlo.k9.service.security.internal;
 
 import com.midorlo.k9.configuration.security.SecurityProperties;
 import com.midorlo.k9.domain.security.Account;
@@ -23,28 +23,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Key;
 
 @Service
 @Slf4j
-public class AuthenticationService {
+public class JwtAuthenticationService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final AccountRepository            accountRepository;
     private final SecurityProperties           securityProperties;
-    private final TokenService                 tokenService;
+    private final JwtTokenService              jwtTokenService;
     private final JwtParser                    tokenParser;
 
-    public AuthenticationService(
+    public JwtAuthenticationService(
             AuthenticationManagerBuilder authenticationManagerBuilder,
             AccountRepository accountRepository,
             SecurityProperties securityProperties,
-            TokenService tokenService) {
+            JwtTokenService jwtTokenService) {
 
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.accountRepository            = accountRepository;
         this.securityProperties           = securityProperties;
-        this.tokenService                 = tokenService;
+        this.jwtTokenService              = jwtTokenService;
         this.tokenParser                  = Jwts.parserBuilder()
                                                 .setSigningKey(Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.securityProperties.getKey())))
                                                 .build();
@@ -59,7 +58,7 @@ public class AuthenticationService {
     public ResponseEntity<Account> handleLogin(LoginDto loginDto) {
         Authentication authentication = authenticate(loginDto);
         Account        account        = ((UserDetailsImpl) authentication.getPrincipal()).getAccount();
-        String         token          = tokenService.createNewAuthenticationToken(account, loginDto.isRemember());
+        String         token          = jwtTokenService.createNewAuthenticationToken(account, loginDto.isRemember());
 
         return ResponseEntity.ok()
                              .header(HttpHeaders.AUTHORIZATION, token)
@@ -98,7 +97,7 @@ public class AuthenticationService {
             && header.contains(" ")
             && header.split(" ").length > 1) {
             final String token  = header.split(" ")[1].trim();
-            Claims       claims = tokenService.resolveClaims(token, securityProperties.getKey());
+            Claims       claims = jwtTokenService.resolveClaims(token, securityProperties.getKey());
             if (claims != null) {
                 String subject = claims.getSubject();
                 if (subject != null) {
@@ -110,7 +109,7 @@ public class AuthenticationService {
             }
 
             //toto smells
-            accountRepository.findAccountByEmail(email).ifPresent(account -> {
+            accountRepository.findAccountByLogin(email).ifPresent(account -> {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(account, null,
                                                                                                    AuthorityMapper.getAuthorities(account));
                 auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

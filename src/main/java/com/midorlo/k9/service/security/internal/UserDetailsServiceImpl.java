@@ -1,15 +1,17 @@
-package com.midorlo.k9.service.security;
+package com.midorlo.k9.service.security.internal;
 
+import com.midorlo.k9.domain.security.Account;
 import com.midorlo.k9.model.security.UserDetailsImpl;
+import com.midorlo.k9.repository.security.AccountRepository;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityNotFoundException;
+import static com.midorlo.k9.service.security.internal.UserDetailsServiceImpl.SPRING_SECURITY_OVERRIDE;
 
-import static com.midorlo.k9.configuration.core.ApplicationConstants.SPRING_SECURITY_OVERRIDE;
+import javax.persistence.EntityNotFoundException;
 
 /**
  * UserDetailsService is described as a core interface that loads user-specific data in the Spring documentation.
@@ -24,22 +26,22 @@ import static com.midorlo.k9.configuration.core.ApplicationConstants.SPRING_SECU
 @Component(SPRING_SECURITY_OVERRIDE)
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final AccountService accountService;
+    static final String SPRING_SECURITY_OVERRIDE = "userDetailsService";
 
-    public UserDetailsServiceImpl(AccountService accountService) {
-        this.accountService = accountService;
-    }
+    private final AccountRepository accountRepository;
+
+    public UserDetailsServiceImpl(AccountRepository accountRepository) {this.accountRepository = accountRepository;}
 
     /**
-     * Loads a Spring Security User.
+     * Loads a Spring Security User. (The semantics are forced.)
      *
-     * @param email unique user name.
-     * @return Spring Security UserDetails Pojo
+     * @param login translates to {@link Account#getLogin()}
+     * @return see {@link UserDetails}
      */
     @Override
-    public @NonNull UserDetails loadUserByUsername(final String email) {
-        return accountService
-                .findAccountByEmail(email)
+    public @NonNull UserDetails loadUserByUsername(final String login) {
+        return accountRepository
+                .findAccountByLogin(login)
                 .map(UserDetailsImpl::new)
                 .orElseThrow(EntityNotFoundException::new);
     }

@@ -1,4 +1,4 @@
-package com.midorlo.k9.service.security;
+package com.midorlo.k9.service.security.internal;
 
 import com.midorlo.k9.configuration.security.SecurityProperties;
 import com.midorlo.k9.domain.security.Account;
@@ -28,13 +28,13 @@ import static com.midorlo.k9.util.security.DateUtilities.*;
 
 @Slf4j
 @Service
-public class TokenService {
+public class JwtTokenService {
 
     private final SecurityProperties securityProperties;
     private final Key encryptionKey;
     private final JwtParser tokenParser;
 
-    public TokenService(SecurityProperties securityProperties) {
+    public JwtTokenService(SecurityProperties securityProperties) {
         this.securityProperties = securityProperties;
         this.encryptionKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.securityProperties.getKey()));
         this.tokenParser = Jwts.parserBuilder().setSigningKey(encryptionKey).build();
@@ -66,7 +66,7 @@ public class TokenService {
                 .collect(Collectors.joining(","));
 
         String token = Jwts.builder()
-                .setSubject(String.format("%s,%s", account.getId(), account.getEmail()))
+                .setSubject(String.format("%s,%s", account.getId(), account.getLogin()))
                 .setIssuer(securityProperties.getIssuer())
                 .setIssuedAt(now())
                 .setExpiration(doExtendExpirationDate ? inOneMonth() : inOneWeek())

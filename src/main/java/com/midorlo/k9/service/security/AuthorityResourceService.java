@@ -13,9 +13,9 @@ public class AuthorityResourceService {
     private final AuthorityRepository authorityRepository;
 
     public Authority createIfNotExists(Authority authority) {
-        return authorityRepository.findByServletPathPathEqualsIgnoreCaseAndMethodEquals(authority.getServletPath()
-                                                                                                 .getPath(),
-                                                                                        authority.getMethod())
+        return authorityRepository.findByServletDescription_PathAndMethod(authority.getServletDescription()
+                                                                                   .getPath(),
+                                                                          authority.getMethod())
                                   .orElse(authorityRepository.save(authority));
     }
 }

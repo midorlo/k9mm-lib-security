@@ -1,4 +1,4 @@
-package com.midorlo.k9.components.security;
+package com.midorlo.k9.component.security;
 
 import com.midorlo.k9.model.security.GrantedAuthorityImpl;
 import com.midorlo.k9.model.security.mapper.AuthorityInfoMapper;
@@ -6,10 +6,8 @@ import com.midorlo.k9.repository.security.AuthorityRepository;
 import hu.webarticum.treeprinter.ListingTreePrinter;
 import hu.webarticum.treeprinter.SimpleTreeNode;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.lang.NonNull;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.AuthorizationManager;
@@ -35,8 +33,8 @@ import java.util.function.Supplier;
  */
 @Slf4j
 @Component
-public class AuthorizationManagerImpl implements AuthorizationManager<HttpServletRequest>,
-                                                 ApplicationListener<ContextRefreshedEvent> {
+@Configuration
+public class JwtAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
 
     private Map<String, Map<HttpMethod, Long>> requirements;
     private final AuthorityRepository authorityRepository;
@@ -45,9 +43,8 @@ public class AuthorizationManagerImpl implements AuthorizationManager<HttpServle
      * @implNote since the restrictions map rarely changes within runtime, its more efficient to just keep them all
      * in memory permanently.
      */
-    public AuthorizationManagerImpl(AuthorityRepository authorityRepository) {
+    public JwtAuthorizationManager(AuthorityRepository authorityRepository) {
         this.authorityRepository = authorityRepository;
-
     }
 
     @Override
@@ -64,8 +61,8 @@ public class AuthorizationManagerImpl implements AuthorizationManager<HttpServle
         log.info("check({}, {})", supplier, request);
         Authentication authentication = resolveSupplier(supplier);
         boolean result =
-                authorityRepository.findByServletPathPathEqualsIgnoreCaseAndMethodEquals(request.getServletPath(),
-                                                                                         HttpMethod.valueOf(request.getMethod()))
+                authorityRepository.findByServletDescription_PathAndMethod(request.getServletPath(),
+                                                                           HttpMethod.valueOf(request.getMethod()))
                                    .map(authority -> authentication != null
                                                      && authentication.getAuthorities()
                                                                       .stream()
@@ -122,10 +119,5 @@ public class AuthorizationManagerImpl implements AuthorizationManager<HttpServle
                 + System.lineSeparator()
                 + System.lineSeparator()
                 );
-    }
-
-    @Override
-    public void onApplicationEvent(@NonNull ContextRefreshedEvent event) {
-        logCurrentAuthorizationTree();
     }
 }

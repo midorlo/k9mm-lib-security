@@ -1,16 +1,9 @@
 package com.midorlo.k9.service.security;
 
-import com.midorlo.k9.domain.core.ServletPath;
-import com.midorlo.k9.domain.security.Authority;
+import com.midorlo.k9.domain.core.ServletDescription;
 import com.midorlo.k9.repository.security.AuthorityRepository;
 import com.midorlo.k9.repository.security.RestMetaRepository;
-import com.midorlo.k9.util.security.RestSecurityUtilities;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class EndpointService {
@@ -24,18 +17,19 @@ public class EndpointService {
         this.authorityRepository = authorityRepository;
     }
 
-    public ServletPath createEndpointIfNotExists(ServletPath servletPath) {
+    public ServletDescription createEndpointIfNotExists(ServletDescription servletDescription) {
         return restMetaRepository
-                .findByPath(servletPath.getPath())
-                .orElse(restMetaRepository.save(servletPath));
+                .findByPath(servletDescription.getPath())
+                .orElse(restMetaRepository.save(servletDescription));
     }
 
 
-    public Map<ServletPath, Set<Authority>> generateServletPathWithDefaultAuthorities(String path) {
-        ServletPath servletPath = restMetaRepository.save(new ServletPath(path));
-        Set<Authority> collect = RestSecurityUtilities.ALL_METHODS.stream().map(m -> new Authority(m, servletPath))
-                                                                   .map(authorityRepository::save)
-                                                                   .collect(Collectors.toSet());
-        return Map.of(servletPath, collect);
-    }
+//    public Map<ServletDescription, Set<Authority>> generateServletPathWithDefaultAuthorities(String path) {
+//        ServletDescription servletDescription = restMetaRepository.save(new ServletDescription(path));
+//        Set<Authority> collect = RestSecurityUtilities.ALL_METHODS.stream().map(m -> new Authority(m,
+//        servletDescription))
+//                                                                   .map(authorityRepository::save)
+//                                                                   .collect(Collectors.toSet());
+//        return Map.of(servletDescription, collect);
+//    }
 }

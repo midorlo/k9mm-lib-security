@@ -14,5 +14,11 @@ public class SecurityProperties {
     @Value("${k9.security.key}")
     private String key;
 
+    @Value("${k9.security.validityMs}")
+    private Long tokenValiditySeconds;
+
+    @Value("${k9.security.extendedValidityMs}")
+    private Long tokenExtendedValiditySeconds;
+
 
 }

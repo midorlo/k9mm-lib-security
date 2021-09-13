@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public
-interface AccountRepository extends JpaRepository<Account, Long> {
+public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    List<Account> findByEmail(String email);
 
-    Optional<Account> findAccountByEmail(String email);
+    List<Account> findByLogin(String email);
+
+    Optional<Account> findAccountByLogin(String login);
 }

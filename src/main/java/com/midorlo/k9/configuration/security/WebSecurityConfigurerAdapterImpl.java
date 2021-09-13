@@ -1,15 +1,14 @@
 package com.midorlo.k9.configuration.security;
 
-import com.midorlo.k9.components.security.AuthenticationFilter;
-import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.model.security.UserDetailsImpl;
-import com.midorlo.k9.service.security.AccountService;
+import com.midorlo.k9.component.security.JwtAccessDecisionManager;
+import com.midorlo.k9.component.security.JwtAuthenticationFilter;
+import com.midorlo.k9.component.security.JwtAuthorizationManager;
+import com.midorlo.k9.service.security.internal.UserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.HttpMethod;
-import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -18,18 +17,12 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.servlet.http.HttpServletResponse;
-
-import static com.midorlo.k9.components.security.AuditorAwareImpl.AUDITOR_AWARE_IMPL_INSTANCE_NAME;
+import static com.midorlo.k9.configuration.security.AuditorAwareImpl.AUDITOR_AWARE_IMPL_INSTANCE_NAME;
 
 /**
  * Configure Spring Security.
@@ -44,27 +37,31 @@ import static com.midorlo.k9.components.security.AuditorAwareImpl.AUDITOR_AWARE_
         jsr250Enabled = true,
         prePostEnabled = true
 )
-public class SecurityModuleConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+public class WebSecurityConfigurerAdapterImpl extends WebSecurityConfigurerAdapter {
 
-    private final AccountService accountService;
-    private final AuthenticationFilter authenticationFilter;
+    private final UserDetailsServiceImpl  userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthorizationManager  authorizationManager;
+    private final JwtAccessDecisionManager accessDecisionManager;
 
-    public SecurityModuleConfiguration(AccountService accountService, AuthenticationFilter authenticationFilter) {
-
-        this.accountService = accountService;
-        this.authenticationFilter = authenticationFilter;
+    public WebSecurityConfigurerAdapterImpl(UserDetailsServiceImpl userDetailsService,
+                                            JwtAuthenticationFilter jwtAuthenticationFilter,
+                                            JwtAuthorizationManager authorizationManager,
+                                            JwtAccessDecisionManager accessDecisionManager) {
+        this.userDetailsService      = userDetailsService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.authorizationManager    = authorizationManager;
+        this.accessDecisionManager = accessDecisionManager;
     }
 
     /**
-     * Configure Cors.
-     *
-     * @implNote Will only be invoked if cors is enabled.
+     * Configure Cors. Will only be invoked if cors is enabled.
      */
     @Bean
     public CorsFilter corsFilter() {
         log.info("corsFilter()");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
+        CorsConfiguration               config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
@@ -79,11 +76,7 @@ public class SecurityModuleConfiguration extends WebSecurityConfigurerAdapter im
     @Override
     public void configure(AuthenticationManagerBuilder auth) throws Exception {
         log.info("configure({})", auth);
-        auth.userDetailsService(login -> {
-            Account account = accountService.findAccountByEmail(login)
-                    .orElseThrow(() -> new UsernameNotFoundException(login));
-            return new UserDetailsImpl(account);
-        });
+        auth.userDetailsService(userDetailsService);
     }
 
     /**
@@ -103,47 +96,36 @@ public class SecurityModuleConfiguration extends WebSecurityConfigurerAdapter im
     public void configure(WebSecurity web) {
         log.info("configure({})", web);
         web.ignoring()
-                .antMatchers(HttpMethod.OPTIONS, "/**")
-                .antMatchers(HttpMethod.GET, "/**")
-                .antMatchers(HttpMethod.POST, "/**");
-    }
-
-    @Override
-    public void addCorsMappings(@NonNull CorsRegistry registry) {
-        log.info("addCorsMappings({})", registry);
-        registry.addMapping("/**");
+           .antMatchers(HttpMethod.OPTIONS, "/**")
+           .antMatchers(HttpMethod.GET, "/**")
+           .antMatchers(HttpMethod.POST, "/**");
     }
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
         log.info("configure({})", http);
         http
-                // Enable CORS
+                // Disable CORS
                 .cors()
-                .and()
+                .disable()
 
                 // Disable CSRF
                 .csrf()
                 .disable()
 
-                // Set session management to stateless
+                // Stateless Sessions
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
 
                 // Set unauthorized requests exception handler
-                .exceptionHandling()
-                .authenticationEntryPoint((request, response, ex) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED, ex.getMessage()))
-                .and()
 
-                // Inject JWT Authentication
-                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
-                // Inject Custom Authorization
                 .authorizeRequests()
-
-                // Leave a single antMatcher as a Spring Security requirement
-                .antMatchers("/").anonymous();
+                .antMatchers("/**")
+                .fullyAuthenticated()
+                .and()
+                .httpBasic();
+                // Inject JWT Authentication
     }
 
     /**
