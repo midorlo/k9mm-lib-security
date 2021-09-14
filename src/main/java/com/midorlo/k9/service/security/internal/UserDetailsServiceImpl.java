@@ -1,7 +1,7 @@
 package com.midorlo.k9.service.security.internal;
 
 import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.model.security.UserDetailsImpl;
+import com.midorlo.k9.model.security.spring.UserDetailsImpl;
 import com.midorlo.k9.repository.security.AccountRepository;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

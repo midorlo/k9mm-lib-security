@@ -1,7 +1,9 @@
 package com.midorlo.k9.domain.security;
 
+import com.midorlo.k9.domain.hr.Person;
+import com.midorlo.k9.domain.security.property.AbstractAuditable;
+import com.midorlo.k9.domain.security.property.SecurityDomainConstants;
 import com.midorlo.k9.domain.security.property.AccountState;
-import com.midorlo.k9.domain.security.util.AuditableEntity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,69 +16,70 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.midorlo.k9.domain.security.Account.*;
-
 /**
  * Represents an Account for this Security Module.
  */
 @Getter
 @Setter
-@Entity(name = ENTITY)
-@Table(name = TABLE, schema = SCHEMA)
+@Entity(name = SecurityDomainConstants.ACCOUNTS_ENTITY)
+@Table(name = SecurityDomainConstants.ACCOUNTS_TABLE, schema = SecurityDomainConstants.SCHEMA)
 @RequiredArgsConstructor
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @ToString
-public class Account extends AuditableEntity<Long> implements IAccount {
-
-    static final String TABLE  = "accounts";
-    static final String SCHEMA = "security";
-    static final String ENTITY = "account";
-
-    static final String COLUMN_ID            = "id";
-    static final String COLUMN_DISPLAY_NAME  = "name";
-    static final String COLUMN_LOGIN         = "login";
-    static final String COLUMN_PASSWORD_HASH = "password";
-    static final String COLUMN_STATE         = "state";
-
-    static final String RELATION_TO_ROLES        = "accounts_roles";
-    static final String RELATION_TO_CLEARANCES   = "accounts_roles";
-    static final String TO_ROLES_SELF            = "id_account";
-    static final String TO_ROLES_OTHER           = "id_role";
-    static final String TO_CLEARANCES_SELF_NAME  = "id_account";
-    static final String TO_CLEARANCES_OTHER_NAME = "id_role";
+public class Account extends AbstractAuditable<Long> {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = SecurityDomainConstants.ACCOUNTS_ID)
     private Long id;
 
-    @Column(name = COLUMN_DISPLAY_NAME, nullable = false, unique = true)
+
+    @Column(name = SecurityDomainConstants.ACCOUNTS_DISPLAY_NAME,
+            nullable = false,
+            unique = true
+    )
     private String displayName;
 
-    @Column(name = COLUMN_LOGIN, nullable = false, unique = true, length = 64)
+    @Column(name = SecurityDomainConstants.ACCOUNTS_LOGIN,
+            nullable = false,
+            unique = true,
+            length = 64
+    )
     private String login;
 
-    @Column(name = COLUMN_PASSWORD_HASH, nullable = false, length = 128)
+    @Column(name = SecurityDomainConstants.ACCOUNTS_PASSWORD_HASH, nullable = false, length = 128)
     private String passwordHash;
 
     @Enumerated
-    @Column(name = COLUMN_STATE, nullable = false, length = 2)
+    @Column(name = SecurityDomainConstants.ACCOUNTS_STATE, nullable = false, length = 2)
     private AccountState state;
 
     @ManyToMany(cascade = { CascadeType.MERGE })
-    @JoinTable(name = RELATION_TO_ROLES,
-               joinColumns = @JoinColumn(name = TO_ROLES_SELF, referencedColumnName = COLUMN_ID),
-               inverseJoinColumns = @JoinColumn(name = TO_ROLES_OTHER, referencedColumnName = COLUMN_ID))
+    @JoinTable(name = SecurityDomainConstants.REL_ACCOUNTS_ROLES,
+               joinColumns = @JoinColumn(name = SecurityDomainConstants.REL_ACCOUNTS_ROLES_ACCOUNT,
+                                         referencedColumnName = SecurityDomainConstants.ACCOUNTS_ID),
+               inverseJoinColumns = @JoinColumn(name = SecurityDomainConstants.REL_ACCOUNTS_ROLES_ROLE,
+                                                referencedColumnName = SecurityDomainConstants.ACCOUNTS_ID))
     @ToString.Exclude
     private Collection<Role> roles = new HashSet<>();
 
     @ToString.Exclude
     @ManyToMany(cascade = { CascadeType.MERGE })
-    @JoinTable(name = RELATION_TO_CLEARANCES,
-               joinColumns = @JoinColumn(name = TO_CLEARANCES_SELF_NAME, referencedColumnName = COLUMN_ID),
-               inverseJoinColumns = @JoinColumn(name = TO_CLEARANCES_OTHER_NAME, referencedColumnName = COLUMN_ID))
-    private Set<Authority> authorities = new HashSet<>();
+    @JoinTable(name = SecurityDomainConstants.REL_ACCOUNTS_CLEARANCES,
+               joinColumns = @JoinColumn(name = SecurityDomainConstants.REL_ACCOUNTS_CLEARANCES_ACCOUNT,
+                                         referencedColumnName = SecurityDomainConstants.ACCOUNTS_ID),
+               inverseJoinColumns = @JoinColumn(name = SecurityDomainConstants.REL_ACCOUNTS_CLEARANCES_CLEARANCE,
+                                                referencedColumnName = SecurityDomainConstants.ACCOUNTS_ID))
+    private Set<Clearance> clearances = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.EAGER,
+               cascade = { CascadeType.MERGE, CascadeType.DETACH },
+               optional = false)
+    @JoinColumn(name = SecurityDomainConstants.ID_OWNER,
+                nullable = false)
+    protected Person owner;
 
     //<editor-fold desc="Constructor">
 
@@ -88,12 +91,12 @@ public class Account extends AuditableEntity<Long> implements IAccount {
                    String passwordHash,
                    AccountState state,
                    Collection<Role> roles,
-                   Set<Authority> authorities) {
+                   Set<Clearance> clearances) {
         this.displayName  = displayName;
         this.passwordHash = passwordHash;
         this.state        = state;
         this.roles.addAll(roles);
-        this.authorities.addAll(authorities);
+        this.clearances.addAll(clearances);
     }
 
     public Account(String login,
@@ -138,13 +141,13 @@ public class Account extends AuditableEntity<Long> implements IAccount {
                    String passwordHash,
                    AccountState state,
                    @NonNull Set<Role> roles,
-                   @NonNull Set<Authority> authorities) {
+                   @NonNull Set<Clearance> clearances) {
         this.displayName  = displayName;
         this.login        = login;
         this.passwordHash = passwordHash;
         this.state        = state;
         this.roles        = roles;
-        this.authorities  = authorities;
+        this.clearances   = clearances;
     }
 
     public Account(String displayName,
@@ -152,15 +155,14 @@ public class Account extends AuditableEntity<Long> implements IAccount {
                    String passwordHash,
                    AccountState state,
                    @NonNull Role primaryRole,
-                   @NonNull Set<Authority> authorities) {
+                   @NonNull Set<Clearance> clearances) {
         this.displayName  = displayName;
         this.login        = login;
         this.passwordHash = passwordHash;
         this.state        = state;
-        this.authorities  = authorities;
+        this.clearances   = clearances;
         this.roles        = new HashSet<>();
         roles.add(primaryRole);
     }
-
     //</editor-fold>
 }

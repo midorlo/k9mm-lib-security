@@ -1,7 +1,7 @@
 package com.midorlo.k9.configuration.security;
 
 import com.midorlo.k9.domain.security.Account;
-import com.midorlo.k9.model.security.UserDetailsImpl;
+import com.midorlo.k9.model.security.spring.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.lang.NonNull;

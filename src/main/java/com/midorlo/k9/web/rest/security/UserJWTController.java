@@ -1,8 +1,8 @@
 package com.midorlo.k9.web.rest.security;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.midorlo.k9.component.security.JwtAuthenticationFilter;
-import com.midorlo.k9.component.security.JwtProvider;
+import com.midorlo.k9.configuration.security.SecurityConstants;
+import com.midorlo.k9.service.security.internal.JwtProvider;
 import com.midorlo.k9.web.rest.security.model.LoginDto;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
-import static com.midorlo.k9.component.security.JwtAuthenticationFilter.AUTHORIZATION_HEADER_FIELD_NAME;
+import static com.midorlo.k9.configuration.security.SecurityConstants.AUTHORIZATION_HEADER_FIELD_NAME;
 
 /**
  * Dedicated Controller to handle login requests.
@@ -55,7 +55,7 @@ public class UserJWTController {
                                                         loginDto.isRememberMe());
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtAuthenticationFilter.AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_FIELD_NAME + newJwtIssue);
+        httpHeaders.add(SecurityConstants.AUTHORIZATION_HEADER, AUTHORIZATION_HEADER_FIELD_NAME + newJwtIssue);
         return new ResponseEntity<>(new JWTToken(newJwtIssue), httpHeaders, HttpStatus.OK);
     }
 
