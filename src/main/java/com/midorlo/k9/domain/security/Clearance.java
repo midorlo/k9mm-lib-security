@@ -1,6 +1,5 @@
 package com.midorlo.k9.domain.security;
 
-import com.midorlo.k9.domain.core.Servlet;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,7 +7,8 @@ import org.hibernate.annotations.Cache;
 
 import javax.persistence.*;
 
-import static com.midorlo.k9.domain.security.property.SecurityDomainConstants.*;
+import static com.midorlo.k9.domain.security.property.SecurityDomainConstants.CLEARANCES_ENTITY;
+import static com.midorlo.k9.domain.security.property.SecurityDomainConstants.CLEARANCES_TABLE;
 import static org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_WRITE;
 
 @Getter
@@ -23,12 +23,13 @@ import static org.hibernate.annotations.CacheConcurrencyStrategy.NONSTRICT_READ_
 public class Clearance {
 
     private static final long serialVersionUID = 1L;
+    public static final String COLUMN_PATH_NAME = "path";
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH }, optional = false)
-    @JoinColumn(name = PATH_SERVLET, nullable = false)
-    protected Servlet servlet;
+    @Column(name = COLUMN_PATH_NAME, nullable = false, unique = true)
+    protected String path;
+
 }

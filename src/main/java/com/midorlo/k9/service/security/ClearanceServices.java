@@ -1,32 +1,34 @@
 package com.midorlo.k9.service.security;
 
 import com.midorlo.k9.domain.security.Clearance;
+import com.midorlo.k9.repository.AbstractJpaService;
 import com.midorlo.k9.repository.security.ClearanceRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 
 import java.util.Optional;
 
-@SuppressWarnings("unused")
 @Service
-@RequiredArgsConstructor
-public class ClearanceServices {
+public class ClearanceServices extends AbstractJpaService<Clearance, Long> {
 
-    private final ClearanceRepository clearanceRepository;
-    private final AntPathMatcher      matcher = new AntPathMatcher();
+    private final AntPathMatcher matcher = new AntPathMatcher();
 
-    public Clearance createIfNotExists(Clearance clearance) {
-        return clearanceRepository.findByServlet_Path(clearance.getServlet().getPath())
-                                  .orElse(clearanceRepository.save(clearance));
+    public ClearanceServices(ClearanceRepository clearanceRepository) {
+        super(clearanceRepository);
     }
 
-    public Optional<Clearance> getRequiredClearance(String requestUri) {
+    @Override
+    public Clearance create(Clearance clearance) {
+        findMatchingClearance(clearance.getPath())
+                .ifPresent(c -> {
+                    throw new RuntimeException(clearance.getPath() + " collides with new clearance path" + clearance.getPath());
+                });
+        return repository.save(clearance);
+    }
 
-        return clearanceRepository.findAll()
-                                  .stream().filter(e -> matcher.match(e.getServlet().getPath(), requestUri))
-                                  .findFirst();
-
-
+    public Optional<Clearance> findMatchingClearance(String requestUri) {
+        return repository.findAll()
+                         .stream().filter(e -> matcher.match(e.getPath(), requestUri))
+                         .findFirst();
     }
 }

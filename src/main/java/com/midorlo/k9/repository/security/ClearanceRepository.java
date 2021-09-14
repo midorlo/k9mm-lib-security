@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClearanceRepository extends JpaRepository<Clearance, Long> {
-    Optional<Clearance> findByServlet_Path(@NonNull String path);
+    Optional<Clearance> findByPath(@NonNull String path);
 
-    List<Clearance> findByServlet_PathContaining(String path);
+    List<Clearance> findByPathContaining(String path);
 
-    List<Clearance> findByServlet_PathLike(String path);
+    List<Clearance> findByPathLike(String path);
 
-    List<Clearance> findByServlet_PathStartsWith(String path);
+    List<Clearance> findByPathStartsWith(String path);
 
 
 
