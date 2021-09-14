@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cache;
-import org.springframework.http.HttpMethod;
 
 import javax.persistence.*;
 
@@ -29,14 +28,7 @@ public class Clearance {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = CLEARANCES_METHOD,
-            nullable = false,
-            updatable = false
-    )
-    private HttpMethod method;
-
     @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH }, optional = false)
-    @JoinColumn(name = "servlet_name", nullable = false)
+    @JoinColumn(name = PATH_SERVLET, nullable = false)
     protected Servlet servlet;
 }

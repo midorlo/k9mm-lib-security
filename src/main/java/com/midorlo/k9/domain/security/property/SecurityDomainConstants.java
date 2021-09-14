@@ -34,7 +34,8 @@ public class SecurityDomainConstants {
     public static final String CLEARANCES_TABLE  = "clearances";
     public static final String CLEARANCES_ENTITY = "clearance";
 
-    public static final String CLEARANCES_METHOD               = "method";
+    public static final String METHOD                          = "method";
     public static final String COL_NAME_ID_SERVLET_DESCRIPTION = "id_servlet_descriptions";
-    public static final String ID_OWNER                        = "ID_OWNER";
+    public static final String ID_OWNER     = "ID_OWNER";
+    public static final String PATH_SERVLET = "PATH_SERVLET";
 }

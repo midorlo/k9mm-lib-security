@@ -7,7 +7,9 @@ import com.midorlo.k9.service.security.ClearanceServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.NonNull;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -37,7 +39,7 @@ public class ClearanceAuthorizationFilter extends OncePerRequestFilter {
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
 
 
-        clearanceServices.getRequiredClearance(request.getRequestURI(), HttpMethod.valueOf(request.getMethod()))
+        clearanceServices.getRequiredClearance(request.getRequestURI())
                          .ifPresent(clearance -> {
 
                              boolean isAuthorized = false;
@@ -57,8 +59,7 @@ public class ClearanceAuthorizationFilter extends OncePerRequestFilter {
                              }
 
                              if (!isAuthorized) {
-                                 throw new UnauthorizedK9SecurityException(authentication, request.getRequestURI(),
-                                                                           HttpMethod.valueOf(request.getMethod()));
+                                 throw new AuthorizationServiceException("Unauthorized!");
                              }
 
                          });

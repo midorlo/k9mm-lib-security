@@ -11,6 +11,6 @@ public class GrantedAuthorityImpl implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return clearance.getServlet().getPath() + ":" + clearance.getMethod();
+        return clearance.getServlet().getPath();
     }
 }

@@ -2,14 +2,20 @@ package com.midorlo.k9.repository.security;
 
 import com.midorlo.k9.domain.security.Clearance;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
-import org.springframework.http.HttpMethod;
 import org.springframework.lang.NonNull;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ClearanceRepository extends JpaRepository<Clearance, Long> {
+    Optional<Clearance> findByServlet_Path(@NonNull String path);
 
-    Optional<Clearance> findByServletPathAndMethod(@Param("servletPath") @NonNull String servletPath,
-                                                   @Param("method") @NonNull HttpMethod method);
+    List<Clearance> findByServlet_PathContaining(String path);
+
+    List<Clearance> findByServlet_PathLike(String path);
+
+    List<Clearance> findByServlet_PathStartsWith(String path);
+
+
+
 }

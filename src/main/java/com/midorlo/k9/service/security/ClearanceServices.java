@@ -3,8 +3,8 @@ package com.midorlo.k9.service.security;
 import com.midorlo.k9.domain.security.Clearance;
 import com.midorlo.k9.repository.security.ClearanceRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.util.AntPathMatcher;
 
 import java.util.Optional;
 
@@ -14,15 +14,19 @@ import java.util.Optional;
 public class ClearanceServices {
 
     private final ClearanceRepository clearanceRepository;
+    private final AntPathMatcher      matcher = new AntPathMatcher();
 
     public Clearance createIfNotExists(Clearance clearance) {
-        return clearanceRepository.findByServletPathAndMethod(clearance.getServlet()
-                                                                       .getPath(),
-                                                              clearance.getMethod())
+        return clearanceRepository.findByServlet_Path(clearance.getServlet().getPath())
                                   .orElse(clearanceRepository.save(clearance));
     }
 
-    public Optional<Clearance> getRequiredClearance(String requestUri, HttpMethod method) {
-        return clearanceRepository.findByServletPathAndMethod(requestUri, method);
+    public Optional<Clearance> getRequiredClearance(String requestUri) {
+
+        return clearanceRepository.findAll()
+                                  .stream().filter(e -> matcher.match(e.getServlet().getPath(), requestUri))
+                                  .findFirst();
+
+
     }
 }
