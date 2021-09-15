@@ -6,11 +6,14 @@ k9:
     issuer: k9.midorlo.de
     validityMs: 1800
     extendedValidityMs: 3600
-
 spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      hibernate:
+        id:
+          new_generator_mappings: true
   datasource:
     hikari:
       pool-name: k9

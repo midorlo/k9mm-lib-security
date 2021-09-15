@@ -57,8 +57,8 @@ public class JwtProvider {
 
         long now = (new Date()).getTime();
         Date validity = (rememberMe)
-                        ? new Date(now + this.tokenValidityExtendedMs)
-                        : new Date(now + this.tokenValidityMs);
+                        ? new Date(now + this.tokenValidityExtendedMs * 1000)
+                        : new Date(now + this.tokenValidityMs * 1000);
 
         return Jwts
                 .builder()

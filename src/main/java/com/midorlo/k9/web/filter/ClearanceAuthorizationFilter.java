@@ -1,7 +1,6 @@
 package com.midorlo.k9.web.filter;
 
 import com.midorlo.k9.model.security.spring.GrantedAuthorityImpl;
-import com.midorlo.k9.model.security.spring.UserDetailsImpl;
 import com.midorlo.k9.service.security.ClearanceServices;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -9,6 +8,7 @@ import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -43,11 +43,11 @@ public class ClearanceAuthorizationFilter extends OncePerRequestFilter {
 
                              Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
                              if (authentication != null) {
-                                 UserDetailsImpl principal =
-                                         (UserDetailsImpl) authentication.getPrincipal();
+                                 org.springframework.security.core.userdetails.User u =
+                                         (User) authentication.getPrincipal();
 
                                  Collection<? extends GrantedAuthority> grantedAuthorities =
-                                         principal.getGrantedAuthorities();
+                                         u.getAuthorities();
 
                                  GrantedAuthorityImpl grantedAuthority = new GrantedAuthorityImpl(clearance);
                                  if (grantedAuthorities.contains(grantedAuthority)) {

@@ -31,8 +31,9 @@ public class Account extends AbstractAuditable<Long> implements IAccount {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = SecurityDomainConstants.ACCOUNTS_ID)
+    @SequenceGenerator(name="accounts_seq", sequenceName="accounts_seq", allocationSize = 1)
     protected Long id;
 
 
@@ -75,7 +76,7 @@ public class Account extends AbstractAuditable<Long> implements IAccount {
     private Set<Clearance> clearances = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.EAGER,
-               cascade = { CascadeType.MERGE, CascadeType.DETACH },
+               cascade = { CascadeType.MERGE, CascadeType.DETACH, CascadeType.PERSIST },
                optional = false)
     @JoinColumn(name = SecurityDomainConstants.ID_OWNER,
                 nullable = false)

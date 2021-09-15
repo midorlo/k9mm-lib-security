@@ -24,8 +24,8 @@ import static com.midorlo.k9.configuration.security.SecurityConstants.AUTHORIZAT
  * Dedicated Controller to handle login requests.
  */
 @RestController
-@RequestMapping("/api")
-public class UserJWTController {
+@RequestMapping("/security")
+public class SecurityController {
 
     private final JwtProvider                  jwtProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -34,7 +34,7 @@ public class UserJWTController {
      * @param jwtProvider                  issuing a token on successful authentification.
      * @param authenticationManagerBuilder checks the given login credentials against the database.
      */
-    public UserJWTController(JwtProvider jwtProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
+    public SecurityController(JwtProvider jwtProvider, AuthenticationManagerBuilder authenticationManagerBuilder) {
         this.jwtProvider                  = jwtProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
     }
