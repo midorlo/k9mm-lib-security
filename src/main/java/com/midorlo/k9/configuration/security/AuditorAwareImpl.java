@@ -1,6 +1,6 @@
 package com.midorlo.k9.configuration.security;
 
-import com.midorlo.k9.domain.security.Account;
+import com.midorlo.k9.domain.security.IAccount;
 import com.midorlo.k9.model.security.spring.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
@@ -15,13 +15,13 @@ import java.util.Optional;
  */
 @Component
 @Slf4j
-public class AuditorAwareImpl implements AuditorAware<Account> {
+public class AuditorAwareImpl implements AuditorAware<IAccount> {
 
     public static final String AUDITOR_AWARE_IMPL_INSTANCE_NAME = "auditorAwareImpl";
 
     @Override
     @NonNull
-    public Optional<Account> getCurrentAuditor() {
+    public Optional<IAccount> getCurrentAuditor() {
         return Optional.of(((UserDetailsImpl) SecurityContextHolder.getContext()
                                                                    .getAuthentication()
                                                                    .getPrincipal()).getAccount()); // N⁰ :-)

@@ -26,35 +26,35 @@ import java.util.Set;
 @RequiredArgsConstructor
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @ToString
-public class Account extends AbstractAuditable<Long> {
+public class Account extends AbstractAuditable<Long> implements IAccount {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = SecurityDomainConstants.ACCOUNTS_ID)
-    private Long id;
+    protected Long id;
 
 
     @Column(name = SecurityDomainConstants.ACCOUNTS_DISPLAY_NAME,
             nullable = false,
             unique = true
     )
-    private String displayName;
+    protected String displayName;
 
     @Column(name = SecurityDomainConstants.ACCOUNTS_LOGIN,
             nullable = false,
             unique = true,
             length = 64
     )
-    private String login;
+    protected String login;
 
     @Column(name = SecurityDomainConstants.ACCOUNTS_PASSWORD_HASH, nullable = false, length = 128)
-    private String passwordHash;
+    protected String passwordHash;
 
     @Enumerated
     @Column(name = SecurityDomainConstants.ACCOUNTS_STATE, nullable = false, length = 2)
-    private AccountState state;
+    protected AccountState state;
 
     @ManyToMany(cascade = { CascadeType.MERGE })
     @JoinTable(name = SecurityDomainConstants.REL_ACCOUNTS_ROLES,
