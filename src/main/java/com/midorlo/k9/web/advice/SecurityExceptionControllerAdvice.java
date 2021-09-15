@@ -4,7 +4,7 @@ import com.midorlo.k9.configuration.security.SecurityConstants;
 import com.midorlo.k9.exception.security.UsernameAlreadyUsedException;
 import com.midorlo.k9.web.problem.*;
 import com.midorlo.k9.web.problem.model.FieldErrorVM;
-import com.midorlo.k9.web.RestUtilities;
+import com.midorlo.k9.web.rest.RestUtilities;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
