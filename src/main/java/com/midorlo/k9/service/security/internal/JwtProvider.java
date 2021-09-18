@@ -37,8 +37,8 @@ public class JwtProvider {
     public JwtProvider(SecurityProperties securityProperties) {
         this.key                     = parsePrivateKey(securityProperties.getKey());
         this.jwtParser               = Jwts.parserBuilder().setSigningKey(key).build();
-        this.tokenValidityMs         = 1000 * securityProperties.getTokenValiditySeconds();
-        this.tokenValidityExtendedMs = 1000 * securityProperties.getTokenExtendedValiditySeconds();
+        this.tokenValidityMs         = 1000 * securityProperties.getValidityMs();
+        this.tokenValidityExtendedMs = 1000 * securityProperties.getExtendedValidityMs();
     }
 
     /**

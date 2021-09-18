@@ -1,24 +1,21 @@
 package com.midorlo.k9.configuration.security;
 
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import com.midorlo.k9.util.YamlPropertySourceFactory;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
-@Component
-@Getter
+@Data
+@Slf4j
+@Configuration
+@ConfigurationProperties(prefix = "security")
+@PropertySource(value = "classpath:security.yml", factory = YamlPropertySourceFactory.class)
 public class SecurityProperties {
 
-    @Value("${k9.security.issuer}")
     private String issuer;
-
-    @Value("${k9.security.key}")
     private String key;
-
-    @Value("${k9.security.validityMs}")
-    private Long tokenValiditySeconds;
-
-    @Value("${k9.security.extendedValidityMs}")
-    private Long tokenExtendedValiditySeconds;
-
-
+    private Long   validityMs;
+    private Long   extendedValidityMs;
 }

@@ -1,7 +1,7 @@
 package com.midorlo.k9.service.security;
 
 import com.midorlo.k9.domain.security.Clearance;
-import com.midorlo.k9.service.DefaultService;
+import com.midorlo.k9.service.AbstractCrudService;
 import com.midorlo.k9.repository.security.ClearanceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
@@ -9,7 +9,7 @@ import org.springframework.util.AntPathMatcher;
 import java.util.Optional;
 
 @Service
-public class ClearanceServices extends DefaultService<Clearance, Long, ClearanceRepository> {
+public class ClearanceServices extends AbstractCrudService<Clearance, Long, ClearanceRepository> {
 
     /**
      * Spring Security has widely accepted and also efficient path matching on board. So let's not reinvent this.
@@ -28,7 +28,7 @@ public class ClearanceServices extends DefaultService<Clearance, Long, Clearance
      * @return record of the new Clearance.
      */
     @Override
-    public Clearance create(Clearance clearance) {
+    public Clearance createOne(Clearance clearance) {
         findMatchingClearance(clearance.getPath())
                 .ifPresent(c -> {
                     throw new RuntimeException(clearance.getPath() + " collides with new clearance path" + clearance.getPath());

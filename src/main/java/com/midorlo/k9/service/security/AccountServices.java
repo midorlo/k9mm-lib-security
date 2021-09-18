@@ -4,13 +4,13 @@ import com.midorlo.k9.domain.hr.Person;
 import com.midorlo.k9.domain.security.Account;
 import com.midorlo.k9.domain.security.property.AccountState;
 import com.midorlo.k9.repository.security.AccountRepository;
-import com.midorlo.k9.service.DefaultService;
+import com.midorlo.k9.service.AbstractCrudService;
 import com.midorlo.k9.web.rest.security.model.RegistrationDto;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountServices extends DefaultService<Account, Long, AccountRepository> {
+public class AccountServices extends AbstractCrudService<Account, Long, AccountRepository> {
 
     private final PasswordEncoder passwordEncoder;
 
