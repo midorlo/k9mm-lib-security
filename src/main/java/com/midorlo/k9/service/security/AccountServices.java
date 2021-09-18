@@ -1,6 +1,6 @@
 package com.midorlo.k9.service.security;
 
-import com.midorlo.k9.domain.hr.Person;
+import com.midorlo.k9.domain.core.Person;
 import com.midorlo.k9.domain.security.Account;
 import com.midorlo.k9.domain.security.property.AccountState;
 import com.midorlo.k9.repository.security.AccountRepository;

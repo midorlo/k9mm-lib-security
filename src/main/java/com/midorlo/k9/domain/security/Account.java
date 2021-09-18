@@ -1,6 +1,6 @@
 package com.midorlo.k9.domain.security;
 
-import com.midorlo.k9.domain.hr.Person;
+import com.midorlo.k9.domain.core.Person;
 import com.midorlo.k9.domain.security.property.AbstractAuditable;
 import com.midorlo.k9.domain.security.property.SecurityDomainConstants;
 import com.midorlo.k9.domain.security.property.AccountState;
@@ -26,14 +26,14 @@ import java.util.Set;
 @RequiredArgsConstructor
 @org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @ToString
-public class Account extends AbstractAuditable<Long> implements IAccount {
+public class Account extends AbstractAuditable<Long> {
 
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = SecurityDomainConstants.ACCOUNTS_ID)
-    @SequenceGenerator(name="accounts_seq", sequenceName="accounts_seq", allocationSize = 1)
+    @SequenceGenerator(name = "accounts_seq", sequenceName = "accounts_seq", allocationSize = 1)
     protected Long id;
 
 

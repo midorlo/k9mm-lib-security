@@ -10,7 +10,7 @@
 
     <artifactId>k9-lib-security</artifactId>
 
-    <name>[Lib] Security</name>
+    <name>LibSecurity</name>
 
     <description>Spring Security implementation using json web tokens</description>
 
