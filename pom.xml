@@ -20,12 +20,7 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.midorlo.k9</groupId>
-            <artifactId>k9-testing-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
